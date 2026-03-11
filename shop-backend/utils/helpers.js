@@ -15,7 +15,7 @@ const generateSessionToken = () => crypto.randomBytes(32).toString('hex');
 const expiresAt = () => {
     const expires_at = new Date();
     expires_at.setDate(expires_at.getDate() + 2);
-    return expiresAt;
+    return expires_at;
 }
 
 /**
@@ -67,8 +67,8 @@ async function hashPassword(password) {
  * @returns {Promise<boolean>} - True if passwords match
  */
 async function verifyPassword(password, hash) {
-  const isValid = await bcrypt.compare(password, hash);
-  return isValid;
+  const is_valid = await bcrypt.compare(password, hash);
+  return is_valid;
 }
 
 /**
