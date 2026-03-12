@@ -79,9 +79,16 @@ const login = asyncHandler (async (req, res) => {
 
     const user = await Users.validateEmail(email);
 
+    if (!user) {
+        return res.status(401).json({
+            success: false,
+            info: 'Incorrect e-mail or password.'
+        });
+    }
+
     const verified = await helpers.verifyPassword(password, user.password_hash);
 
-    if (!user || !verified) {
+    if (!verified) {
         return res.status(401).json({
             success: false,
             info: 'Incorrect e-mail or password.'
@@ -90,9 +97,13 @@ const login = asyncHandler (async (req, res) => {
 
     const token = helpers.generateSessionToken();
 
+    const token_with_user_id = `${user.id}.${token}`;
+
     const expires_at = helpers.expiresAt();
 
-    await Sessions.createSession(user.id, token, expires_at);
+    const hashed_token = helpers.hashSessionToken(token);
+
+    await Sessions.createSession(user.id, hashed_token, expires_at);
     await Users.patchLastLogin(user.id, new Date());
     
     const { password_hash, ...userWithoutPasswordHash } = user;
@@ -100,7 +111,7 @@ const login = asyncHandler (async (req, res) => {
     res.status(200).json({
         success: true,
         data: userWithoutPasswordHash,
-        token: token,
+        token: token_with_user_id,
         info: "Access granted"
     });
 

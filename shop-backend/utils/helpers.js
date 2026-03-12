@@ -5,6 +5,7 @@ const Sessions = require('../models/Sessions');
 // Sessions
 /**
  * Generate random session token
+ * @returns {string} - Generated token
  */
 const generateSessionToken = () => crypto.randomBytes(32).toString('hex');
 
@@ -16,7 +17,19 @@ const expiresAt = () => {
     const expires_at = new Date();
     expires_at.setDate(expires_at.getDate() + 2);
     return expires_at;
-}
+};
+
+/**
+ * @param {string} - Session token
+ * @returns {string} - Hashed token
+ */
+const hashSessionToken = (token) => {
+  return crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex')
+
+};
 
 /**
  * Check if token is expired
@@ -26,24 +39,26 @@ const expiresAt = () => {
 const isExpired = (expires_at) => {
   const expired = new Date(expires_at) < new Date();
   return expired;
-}
+};
 
 /**
  * Deletes session token
  * @param {string} token - Session token
+ * @param {number} token - User ID
  */
-const deleteToken = async (token) => await Sessions.deleteSession(token);
+const deleteToken = async (user_id, token) => await Sessions.deleteSession(user_id, token);
 
 /**
  * Gets token then returns user and when token expires_at who has this token or undefined, 
  * if token doesn't attached to any user
  * @param {string} token - Session token
+ * @param {number} token - User ID
  * @returns {Promise<object|null>} - User object or null
  */
-const getSessionByToken = async (token) => {
-  const user = await Sessions.getSessionByToken(token);
+const getSessionByHashedToken = async (user_id, token_hash) => {
+  const user = await Sessions.getSessionByHashedToken(user_id, token_hash);
   return user;
-}
+};
 
 // Auth
 // Number of salt rounds (higher = more secure but slower)
@@ -58,7 +73,7 @@ const SALT_ROUNDS = 10;
 async function hashPassword(password) {
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
   return hash;
-}
+};
 
 /**
  * Compare plain text password with stored hash
@@ -69,7 +84,7 @@ async function hashPassword(password) {
 async function verifyPassword(password, hash) {
   const is_valid = await bcrypt.compare(password, hash);
   return is_valid;
-}
+};
 
 /**
  * 
@@ -87,9 +102,10 @@ const validatePassword = (password) => {
 module.exports = {
   generateSessionToken,
   expiresAt,
+  hashSessionToken,
   isExpired,
   deleteToken,
-  getSessionByToken,
+  getSessionByHashedToken,
   hashPassword,
   verifyPassword,
   validatePassword

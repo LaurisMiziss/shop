@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const loginLimiter = require('../middleware/loginLimiter');
 const requireAuth = require('../middleware/requireAuth');
 const requireAdmin = require('../middleware/requireAdmin');
 const validateParams = require('../middleware/validateParams');
 const userController = require('../controllers/userController');
 
 // Auth
-router.post('/register', userController.register);
-router.post('/login', userController.login);
+router.post('/register', loginLimiter, userController.register);
+router.post('/login', loginLimiter, userController.login);
 
 // Guest validation
 router.get('/check', userController.validateField);
