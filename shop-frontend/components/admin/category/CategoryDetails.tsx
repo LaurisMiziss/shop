@@ -2,7 +2,7 @@ import { Category } from "../../../types/category";
 import { CategoryEditFieldErrors } from "../../../types/fieldErrors";
 
 interface CategoryDetailsProps {
-    action: "create" | "update"
+    action: "create" | "update" | null;
     oldCategory: Category | null;
     category: Category | null;
     imageUrl: string;
