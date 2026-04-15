@@ -27,26 +27,7 @@ export default function AdminCategoryEditPage() {
     console.log("aaaaaaaa")
     return (
         <div>
-            
-            <CategoryDetails
-                action={passedAction}
-                oldCategory={oldCategory}
-                category={category}
-                imageUrl={imageUrl}
-                alert={alert}
-                fieldErrors={fieldErrors}
-                loading={loading}
-                onNameChange={}
-                onDescriptionChange={}
-                onImageUrlChange={}
-                onDisplayOrderChange={}
-                onIsActiveChange={}
-                onUndoClick={}
-                removeAlert={removeAlert}
-                updateCategory={}
-                postCategory={}
-                handleDeleteClick={}
-            />
+            <p>aa</p>
 
         </div>
     );
