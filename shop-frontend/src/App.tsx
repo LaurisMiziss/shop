@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import HomePage from "../pages/HomePage";
+import ShopPage from "../pages/shop/ShopPage"
+import ProductDetailsPage from "..//pages/shop/Product/ProductDetailsPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -15,13 +18,9 @@ export default function App() {
         {/* public routes — anyone can visit */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
-        {/* protected routes — only logged in users */}
-        {/* <Route path="/home" element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        } /> */}
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/shop-products" element={<ShopPage />} />
+        <Route path="/shop-products-details" element={<ProductDetailsPage />} />
 
         {/* if someone visits "/" redirect them */}
         <Route path="/" element={<Navigate to="/login" />} />

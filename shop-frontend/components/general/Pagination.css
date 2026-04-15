@@ -1,0 +1,50 @@
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    margin: 2rem 0;
+}
+
+/* PAGE LIST */
+.page-list {
+    display: flex;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* BUTTON BASE */
+.page-item button,
+.nav-btn {
+    border: 1px solid #ddd;
+    background: white;
+
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+.page-item button:hover,
+.nav-btn:hover:not(:disabled) {
+    background-color: #f0f4ff;
+    border-color: #0077ff;
+}
+
+/* ACTIVE PAGE */
+.page-item.active button {
+    background-color: #0077ff;
+    color: white;
+    border-color: #0077ff;
+}
+
+/* DISABLED */
+.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

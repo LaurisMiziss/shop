@@ -1,5 +1,3 @@
-import type { NavigateFunction } from "react-router-dom";
-
 interface LoginFormProps {
   email: string;
   password: string;
@@ -10,7 +8,8 @@ interface LoginFormProps {
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePassword: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  navigate: NavigateFunction;
+  onNavigateToHome: () => void;
+  onNavigateToRegister: () => void;
 }
 
 export default function LoginForm({
@@ -23,7 +22,8 @@ export default function LoginForm({
   onPasswordChange,
   onTogglePassword,
   onSubmit,
-  navigate,
+  onNavigateToHome,
+  onNavigateToRegister,
 }: LoginFormProps) {
   return (
     <div className="auth-container fade-in">
@@ -72,7 +72,11 @@ export default function LoginForm({
 
       <p className="auth-switch">
         Don't have an account?{" "}
-        <span onClick={() => navigate("/register")}>Register here</span>
+        <span onClick={onNavigateToRegister}>Register here</span>
+      </p>
+
+      <p className="auth-switch" onClick={onNavigateToHome}>
+        Continue without logging in{" "}
       </p>
     </div>
   );

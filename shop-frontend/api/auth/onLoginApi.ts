@@ -1,3 +1,4 @@
+import { apiFetch } from "../../utils/apiFetch";
 import type { User, LoginResponse } from '../../types/user';
 
 export const onLoginApi = async (
@@ -5,9 +6,8 @@ export const onLoginApi = async (
   password: string
 ): Promise<User | null> => {
   try {
-    const res = await fetch("http://localhost:3001/api/auth/login", {
+    const res = await apiFetch("/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
 
@@ -19,10 +19,10 @@ export const onLoginApi = async (
 
     localStorage.setItem("token", json.token);
 
-    return json.data; // ✓ return just the User
+    return json.data;
 
   } catch (err) {
-    console.error(err); // network error, no internet, server down
+    console.error(err);
     return null;
   }
 };

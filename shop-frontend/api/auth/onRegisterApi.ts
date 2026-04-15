@@ -1,3 +1,4 @@
+import { apiFetch } from "../../utils/apiFetch";
 import type { Response } from '../../types/response';
 
 export const onRegisterApi = async (
@@ -13,9 +14,8 @@ export const onRegisterApi = async (
     postal_code: string
 ): Promise<Response | null> => {
   try {
-    const res = await fetch("http://localhost:3001/api/auth/register", {
+    const res = await apiFetch("/auth/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password, full_name, phone, address_line1, address_line2, country, city, postal_code })
     });
 

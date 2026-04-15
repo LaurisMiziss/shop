@@ -1,3 +1,4 @@
+import { apiFetch } from "../../utils/apiFetch";
 import type { Response } from '../../types/response';
 
 export const validateRegisterFields = async (
@@ -6,9 +7,8 @@ export const validateRegisterFields = async (
     phone: string | undefined
 ): Promise<Response | null> => {
   try {
-    const res = await fetch(`http://localhost:3001/api/auth/check?username=${username}&email=${email}&phone=${phone}`, {
+    const res = await apiFetch(`/auth/check?username=${username}&email=${email}&phone=${phone}`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
     });
     
     if (!res.ok && res.status !== 409) return null;

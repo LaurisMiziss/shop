@@ -68,7 +68,7 @@ export function useRegisterForm() {
                         setError("Something went wrong");
                     }
                 }
-            }, 1000);
+            }, 500);
 
             return () => clearTimeout(timeout);
         }
@@ -139,6 +139,10 @@ export function useRegisterForm() {
         setError(null);
 
         try {
+            if (fieldErrors.username || fieldErrors.email || fieldErrors.password || fieldErrors.phone) {
+                return null;
+            }
+
             const res = await onRegisterApi(username, email, password, fullname, `${phonePrefix}${phone}`, addressLine1, addressLine2, country, city, postalCode);
 
             if (!res?.success) setError(res?.info ?? "Something went wrong");

@@ -13,9 +13,13 @@ export default function LoginPage() {
     const user = await handleLogin();
     if (user) {
       login(user);
-      navigate("/home");
+      onNavigateToHome();
     }
   };
+
+  const onNavigateToHome = () => navigate("/home");
+
+  const onNavigateToRegister = () => navigate("/register");
 
   return (
     <LoginForm
@@ -28,7 +32,8 @@ export default function LoginPage() {
       onPasswordChange={(e) => setPassword(e.target.value)}
       onTogglePassword={togglePassword}
       onSubmit={handleSubmit}
-      navigate={navigate}
+      onNavigateToHome={onNavigateToHome}
+      onNavigateToRegister={onNavigateToRegister}
     />
   );
 }

@@ -1,0 +1,138 @@
+/* NAVBAR CONTAINER */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.8rem 2rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
+
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* NAV ITEMS WRAPPER */
+nav ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* EACH ITEM */
+.nav-item {
+    list-style: none;
+}
+
+/* LINKS */
+.nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #0077ff;
+}
+
+.nav-link.active {
+    color: #0077ff;
+}
+
+/* SEARCH WRAPPER */
+nav > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* SEARCH INPUT */
+input[type="text"] {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    outline: none;
+
+    transition: border 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: #0077ff;
+}
+
+/* SEARCH BUTTON */
+button {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #0077ff;
+    color: white;
+    cursor: pointer;
+
+    transition: background 0.2s;
+}
+
+button:hover {
+    background-color: #005edb;
+}
+
+/* DROPDOWN */
+.search-dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 280px;
+
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+
+    z-index: 10;
+}
+
+/* DROPDOWN ITEM */
+.search-dropdown-item {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+
+    transition: background 0.2s;
+}
+
+.search-dropdown-item:hover {
+    background-color: #f5f7fa;
+}
+
+/* IMAGE */
+.search-dropdown-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* TEXT */
+.search-dropdown-item p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* OVERLAY */
+.dropdown-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+}
