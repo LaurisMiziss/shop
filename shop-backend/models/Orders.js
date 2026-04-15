@@ -18,6 +18,9 @@ const getOrdersAndItems = async (user_id, limit, offset) => {
             o.total_amount,
             o.status,
             o.created_at,
+            o.customer_notes,
+            COUNT(*) OVER() AS total,
+
 
             COALESCE(
                 json_agg(

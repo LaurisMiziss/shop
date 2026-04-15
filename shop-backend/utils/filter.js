@@ -1,4 +1,4 @@
-const filter = (model, category_id, sort, sort_type, price_min, price_max, is_featured, offset) => {
+const filter = (is_admin, model, category_id, sort, sort_type, price_min, price_max, is_featured, offset) => {
     
     const allowedModel = ["products", "cart_items"];
     const allowedSort = model === "products" ? ["name", "price", "stock"] : ["name", "price", "stock", "added_at"];
@@ -16,7 +16,8 @@ const filter = (model, category_id, sort, sort_type, price_min, price_max, is_fe
 
     if (model === "products") {
         query = 
-            `SELECT id, name, price, stock, category_id, image_url, is_active, is_featured 
+            `SELECT id, name, price, stock, category_id, image_url, is_active, is_featured,
+            COUNT(*) OVER() AS total
             FROM products 
             WHERE name ILIKE '%' || $1 || '%' 
             AND price BETWEEN $2 AND $3`;
@@ -24,7 +25,8 @@ const filter = (model, category_id, sort, sort_type, price_min, price_max, is_fe
     } else {
         query =
             `SELECT 
-            ci.*, name, price, stock, category_id, image_url, is_active, is_featured
+            ci.id, ci.user_id, ci.product_id, ci.quantity, ci.added_at, name, price, unit, stock, category_id, image_url, is_active, is_featured,
+            COUNT(*) OVER() as total
             FROM cart_items AS ci
             JOIN products AS pr
             ON pr.id = ci.product_id
@@ -39,15 +41,25 @@ const filter = (model, category_id, sort, sort_type, price_min, price_max, is_fe
     }
 
     if (is_featured !== false) {
-        query += ` AND is_featured = true`
+        query += ` AND is_featured = true`;
+    }
+
+    if (!is_admin) {
+        query += ` AND is_active = true`;
+    }
+
+    if (model === "products") {
+        query += ' GROUP BY id, name, price, stock, category_id, image_url, is_active, is_featured'
+    } else {
+        query+= ' GROUP BY ci.id, ci.user_id, ci.product_id, ci.quantity, ci.added_at, name, price, unit, stock, category_id, image_url, is_active, is_featured'
     }
 
     query += ` ORDER BY ${sort} ${sort_type}`
 
     if (model === "products") {
-        query += ` LIMIT $4 OFFSET $5;`
+        query += ` LIMIT $4 OFFSET $5`
     } else {
-        query += ` LIMIT $5 OFFSET $6;`
+        query += ` LIMIT $5 OFFSET $6`
     }
 
     return query;

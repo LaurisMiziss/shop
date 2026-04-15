@@ -38,9 +38,14 @@ router.delete('/admin/:category_id',
     validateParams('category_id'),
     categoriesController.deleteCategory
 );
+router.get('/admin/',
+    requireAuth,
+    requireAdmin,
+    categoriesController.getAllCategories
+);
 
 // Guest/Customer routes
-router.get('/', categoriesController.getAllCategories);
+router.get('/', categoriesController.getAllActiveCategories);
 router.get('/:category_id',
     validateParams('category_id'),
     validateQuery('limit'),

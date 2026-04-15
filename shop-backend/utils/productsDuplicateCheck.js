@@ -1,11 +1,12 @@
 const Products = require('../models/Products');
 
-const productsDuplicateCheck = async (name = undefined) => {
+const productsDuplicateCheck = async (name = undefined, product_id) => {
+    if (!product_id) return "Product ID is required";
 
-    const duplicate_name = await Products.checkNameIsTaken(name);
+    const product = await Products.checkNameIsTaken(name);
 
-    if (duplicate_name.length > 0) {
-        return "This product name is already taken";
+    if (product.length !== 0) {
+        if ((product[0].name === name & product_id !== product[0].id)) return "This product name is already taken";
     }
 
     return "Duplicates are not found";

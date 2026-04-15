@@ -117,6 +117,38 @@ const login = asyncHandler (async (req, res) => {
 
 });
 
+const loginByToken = asyncHandler (async (req, res) => {
+    
+    const token = req.headers.authorization;
+    const user_id = req.user.id;
+
+    if (!user_id || !token) {
+        return res.status(404).json({
+            success: false,
+            info: "Invalid session token"
+        });
+    }
+
+    const user = await Users.getUser(user_id);
+
+    if (!user) {
+        return res.status(400).json({
+            success: false,
+            info: "User with such ID is not found"
+        });
+    }
+
+    const { password_hash, ...userWithoutPasswordHash } = user;
+
+    res.status(200).json({
+        success: true,
+        data: userWithoutPasswordHash,
+        token: token,
+        info: "User with such token was found"
+    });
+    
+});
+
 // Validate name, email or phone
 const validateField =  asyncHandler (async (req, res) => {
 
@@ -356,6 +388,7 @@ const patchRole = asyncHandler (async (req, res) => {
 module.exports = {
     register,
     login,
+    loginByToken,
     validateField,
     verifyAction,
     patchUserField,

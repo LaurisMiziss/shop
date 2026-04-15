@@ -1,5 +1,6 @@
 import "./Navbar.css";
 import { useSearch } from "../../context/SearchContext";
+import { useAuth } from "../../context/AuthContext";
 
 interface NavbarProps {
     onNavigateToHome: () => void;
@@ -10,6 +11,7 @@ interface NavbarProps {
     onNavigateToSettings: () => void;
     onSearchClick: () => void;
     onProductClick: (productId: number) => void;
+    onNavigateToAdminPanel: () => void;
 }
 
 export function Navbar({
@@ -20,9 +22,11 @@ export function Navbar({
     onNavigateToProfile,
     onNavigateToSettings,
     onSearchClick,
-    onProductClick
+    onProductClick,
+    onNavigateToAdminPanel
 }: NavbarProps) {
-    const { searchQuery, showDropdown, products, onSearchChange, closeDropdown } = useSearch();
+    const { searchQuery, showDropdown, products, onSearchChange, openDropdown, closeDropdown } = useSearch();
+    const { user } = useAuth();
 
     return (
         <nav>
@@ -44,6 +48,11 @@ export function Navbar({
             <li className="nav-item">
                 <a className="nav-link" onClick={onNavigateToSettings}>Settings</a>
             </li>
+            {user && user.role === "admin" && (
+                <li className="nav-item">
+                    <a className="nav-link" onClick={onNavigateToAdminPanel}>Admin Panel</a>
+                </li>
+            )}
             
             <div style={{ position: "relative" }}>
                 <input
@@ -60,9 +69,14 @@ export function Navbar({
                     Search
                 </button>
 
+                {/* invisible box to trigger search list, if mouse enters */}
+                {!showDropdown && products && products.length > 0 && (
+                    <div className="search-dropdown-invisible" onMouseEnter={openDropdown} />
+                )}
+
                 {/* dropdown */}
                 {showDropdown && products && products.length > 0 && (
-                    <ul className="search-dropdown">
+                    <ul className="search-dropdown" onMouseLeave={closeDropdown}>
                         {products.map(product => (
                             <li
                                 key={product.id}
@@ -77,14 +91,6 @@ export function Navbar({
                             </li>
                         ))}
                     </ul>
-                )}
-                {/*add reference}
-                {/* close dropdown when clicking outside */}
-                {showDropdown && (
-                    <div
-                        className="dropdown-overlay"
-                        onClick={closeDropdown}
-                    />
                 )}
             </div>
         </nav>

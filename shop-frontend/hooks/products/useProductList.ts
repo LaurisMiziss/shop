@@ -8,6 +8,7 @@ const ITEMS_PER_PAGE = 10;
 
 export function useProductList() {
     const [products, setProducts] = useState<Product[] | null>(null);
+    const [tableView, setTableView] = useState<boolean>(false);
     const [filter, setFilter] = useState<Filter>({
         categoryId: undefined,
         sort: "name",
@@ -20,10 +21,11 @@ export function useProductList() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [totalCount, setTotalCount] = useState(0); // Items in products[]
+    const [totalCount, setTotalCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
@@ -138,6 +140,14 @@ export function useProductList() {
         setFilter(prev => ({ ...prev, isFeatured: e.target.value || "" }));
     };
 
+    const onViewChange = (view: string) => {
+        if (view === "table") {
+            setTableView(true);
+        } else {
+            setTableView(false);
+        }
+    };
+
     const onPageChange = (page: number) => {
         setCurrentPage(page);
         setFilter(prev => ({...prev, offset: (page - 1) * ITEMS_PER_PAGE}))
@@ -145,6 +155,7 @@ export function useProductList() {
 
     return {
         products,
+        tableView,
         loading,
         error,
         filter,
@@ -158,6 +169,7 @@ export function useProductList() {
         onSortChange,
         onSortTypeChange,
         onIsFeaturedChange,
+        onViewChange,
         onPageChange
     };
 }

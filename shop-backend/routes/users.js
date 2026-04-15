@@ -9,6 +9,7 @@ const userController = require('../controllers/userController');
 // Auth
 router.post('/register', loginLimiter, userController.register);
 router.post('/login', loginLimiter, userController.login);
+router.post('/login_by_token', requireAuth, loginLimiter, userController.loginByToken);
 
 // Guest validation
 router.get('/check', userController.validateField);

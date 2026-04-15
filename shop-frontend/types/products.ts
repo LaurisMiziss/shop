@@ -2,7 +2,7 @@ export interface Product {
     id: number;
     name: string;
     price: string;
-    stock: number;
+    stock: number | string;
     category_id: number;
     image_url: string;
     is_active: boolean;
@@ -22,8 +22,8 @@ export interface ProductDetail extends Product {
     images: string[];
     weight: number;
     unit: string;
-    created_at: string;
-    updated_at: string;
+    created_at: string | undefined;
+    updated_at: string | undefined;
 }
 
 export interface GetProductDetailResponse {

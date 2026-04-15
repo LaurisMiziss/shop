@@ -1,0 +1,163 @@
+/* ALERT */
+.alert-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    min-width: 250px;
+    text-align: center;
+    animation: fadeInOut 5s ease forwards;
+}
+
+/* Types */
+.alert.success {
+    background-color: #28a745;
+}
+
+.alert.error {
+    background-color: #dc3545;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    10% { opacity: 1; transform: translate(-50%, 0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+/* CONTAINER */
+.cart-container {
+    padding: 1.5rem;
+}
+
+/* GRID */
+.cart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD */
+.cart-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cart-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* IMAGE */
+.cart-card-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+/* BODY */
+.cart-card-body {
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* NAME */
+.cart-card-name {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.cart-card-name:hover {
+    text-decoration: underline;
+}
+
+/* PRICE */
+.cart-card-price {
+    font-weight: bold;
+    color: #0077ff;
+}
+
+/* STOCK */
+.cart-card-stock {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* QUANTITY */
+.cart-card-quantity input {
+    width: 60px;
+    padding: 4px;
+}
+
+.cart-card-guide {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* TOTAL PRICE ITEM */
+.cart-card-total-item {
+    width: 160px;
+    padding: 4px;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* DELETE BUTTON */
+.cart-card-delete {
+    margin-top: auto;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+}
+
+.cart-card-delete:hover {
+    background: #b52a37;
+}
+
+/* FOOTER */
+.cart-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* TOTAL PRICE */
+.cart-card-total {
+    width: 150px;
+    padding: 6px;
+    font-size: 1rem;
+    color: #404040;
+}
+
+/* PAY BUTTON */
+.pay-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #28a745;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pay-button:hover {
+    background: #218838;
+}

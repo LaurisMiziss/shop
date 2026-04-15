@@ -18,7 +18,7 @@ const checkCart = asyncHandler (async (req, res) => {
     const limit = +req.query.limit || 10;
     const offset = +req.query.offset || 0;
 
-    const query = filter("cart_items", category_id, sort, sort_type, price_min, price_max, is_featured, offset);
+    const query = filter(false, "cart_items", category_id, sort, sort_type, price_min, price_max, is_featured, offset);
 
     if (query === "Error") {
         return res.status(400).json({
@@ -28,7 +28,7 @@ const checkCart = asyncHandler (async (req, res) => {
     }
 
     const user_id = +req.user.id;
-
+    
     const cart = await CartItems.searchQuery(query, user_id, name, price_min, price_max, limit, offset);
     
     res.status(200).json({
@@ -194,9 +194,56 @@ const deleteItem = asyncHandler (async (req, res) => {
 
 });
 
+// Delete items from a user's cart that were placed in order
+const deleteOrderItems = asyncHandler (async (req, res) => {
+
+    const user_id = +req.user.id;
+    const cart_items = req.query.cart_items;
+
+    if (!cart_items) {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid cart"
+        });
+    }
+
+    if (Array.isArray(cart_items)) {
+        let err = false;;
+        
+        const filteredCart = cart_items.map(ci => {
+            const newCi = +ci;
+
+            if (Number.isNaN(ci)) {
+                let err = true;
+            } else {
+                return newCi;
+            }
+        });
+
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                info: "Wrong format"
+            });
+        }
+
+        await CartItems.deleteOrderItems(user_id, filteredCart);
+        
+    } else {
+        await CartItems.deleteItem(user_id, +cart_items);
+    }
+
+    res.status(200).json({
+        success: true,
+        info: "Items were deleted"
+    });
+
+});
+
 module.exports = {
     checkCart,
     postItem,
     updateItemQuantity,
-    deleteItem
+    deleteItem,
+    deleteOrderItems
 };

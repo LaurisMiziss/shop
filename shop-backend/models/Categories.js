@@ -4,6 +4,17 @@ const getAllCategories = async () => {
     const result = await pool.query(
         `SELECT ct.*, COUNT('id') FROM categories as ct
         JOIN products as pr ON ct.id = pr.category_id
+        GROUP BY ct.id
+        ORDER BY display_order;`
+    );
+
+    return result.rows;
+};
+
+const getAllActiveCategories = async () => {
+    const result = await pool.query(
+        `SELECT ct.*, COUNT('id') FROM categories as ct
+        JOIN products as pr ON ct.id = pr.category_id
         WHERE ct.is_active = true
         GROUP BY ct.id
         ORDER BY display_order;`
@@ -122,6 +133,7 @@ const deleteCategory = async (category_id) => {
 
 module.exports = {
     getAllCategories,
+    getAllActiveCategories,
     getProductsOfCategory,
     checkCategoryExists,
     checkDisplayOrderExists,

@@ -43,10 +43,20 @@ const deleteItem = async (user_id, product_id) => {
     );
 };
 
+const deleteOrderItems = async (user_id, cart_items) => {
+    await pool.query(
+        `DELETE FROM cart_items
+        WHERE user_id = $1
+        AND product_id = ANY($2::int[]);`,
+        [user_id, cart_items]
+    );
+}
+
 module.exports = {
     searchQuery,
     checkIfItemIsAdded,
     postItem,
     updateItemQuantity,
-    deleteItem
+    deleteItem,
+    deleteOrderItems
 };

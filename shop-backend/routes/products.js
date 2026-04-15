@@ -32,6 +32,13 @@ router.delete('/admin/:product_id',
     validateParams('product_id'),
     productsController.deleteProduct
 );
+router.get ('/admin',
+    requireAuth,
+    requireAdmin,
+    validateQuery('category_id'),
+    validateQuery('limit'),
+    productsController.getAdminProductsWithFilter
+);
 
 // Guest routes
 router.get ('/',

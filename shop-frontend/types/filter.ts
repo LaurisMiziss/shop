@@ -1,6 +1,6 @@
 export interface Filter {
     categoryId: number | undefined;
-    sort: string | undefined;
+    sort: string;
     sortType: string | undefined;
     priceMin: number;
     priceMax: number;

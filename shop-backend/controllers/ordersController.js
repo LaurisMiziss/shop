@@ -5,17 +5,17 @@ const pool = require('../config/db');
 // Get orders and each order's details
 const getOrders = asyncHandler ( async (req, res) => {
 
-    const limit_num = Number(req.query.limit) || 10;
-    const offset_num = Number(req.query.offset) || 0;
+    const limit = Number(req.query.limit) || 10;
+    const offset = Number(req.query.offset) || 0;
 
-    if (!Number.isInteger(offset)) {
+    if (!Number.isInteger(offset) || !Number.isInteger(limit)) {
         res.status(400).json({
             success: false,
-            info: "Invalid offset"
+            info: "Invalid offset or limit"
         });
     }
 
-    const orders = await Orders.getOrdersAndItems(req.user.id, limit_num, offset_num);
+    const orders = await Orders.getOrdersAndItems(req.user.id, limit, offset);
     
     res.status(200).json({ 
         success: true, 
@@ -46,8 +46,8 @@ const postOrder = asyncHandler(async (req, res) => {
             throw new Error("Missing required field(s)");
         }
 
-        const checkFields = cart.find(product => (product.id === undefined || product.quantity === undefined) || (!Number.isInteger(product.id) || !Number.isInteger(product.quantity)))
-        
+        const checkFields = cart.find(product => (product.product_id === undefined || product.quantity === undefined) || !Number.isInteger(product.id));
+
         if (checkFields) {
             throw new Error("Wrong format");
         }
@@ -60,7 +60,7 @@ const postOrder = asyncHandler(async (req, res) => {
 
             const { rows } = await client.query(
                 "SELECT id, name, price, stock FROM products WHERE id = $1",
-                [cartProduct.id]
+                [cartProduct.product_id]
             );
 
             const product = rows[0];
@@ -69,17 +69,17 @@ const postOrder = asyncHandler(async (req, res) => {
                 throw new Error("Product not found");
             }
 
-            if (product.stock < cartProduct.quantity) {
+            if (+product.stock < +cartProduct.quantity) {
                 throw new Error("Not enough stock");
             }
 
-            const subtotal = product.price * cartProduct.quantity;
+            const subtotal = +product.price * +cartProduct.quantity;
 
             total_amount += subtotal;
 
             checkedCart.push({
                 ...product,
-                quantity: cartProduct.quantity,
+                quantity: +cartProduct.quantity,
                 subtotal
             });
         }
@@ -110,7 +110,7 @@ const postOrder = asyncHandler(async (req, res) => {
                     product.id,
                     product.name,
                     product.price,
-                    product.quantity,
+                    +product.quantity,
                     product.subtotal
                 ]
             );
@@ -120,7 +120,7 @@ const postOrder = asyncHandler(async (req, res) => {
                  SET stock = stock - $1
                  WHERE id = $2
                  AND stock >= $1`,
-                [product.quantity, product.id]
+                [+product.quantity, product.id]
             );
 
             if (stockResult.rowCount === 0) {
@@ -208,10 +208,10 @@ const deleteOrder = asyncHandler (async (req, res) => {
         });
     }
 
-    if (order.status !== "delivered") {
+    if (order.status !== "delivered" || order.status !== "cancelled") {
         return res.status(400).json({
             success: false, 
-            info: "Order can't be deleted, if it's not delivered"
+            info: "Order can't be deleted, if it's not delivered or cancelled"
         });
     } else {
         await Orders.deleteOrder(order_id);

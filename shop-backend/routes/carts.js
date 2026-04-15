@@ -22,6 +22,12 @@ router.patch('/:product_id',
     validateParams('product_id'),
     cartsController.updateItemQuantity
 );
+
+router.delete('/delete', 
+    requireAuth,
+    cartsController.deleteOrderItems
+);
+
 router.delete('/:product_id', 
     requireAuth,
     validateParams('product_id'),

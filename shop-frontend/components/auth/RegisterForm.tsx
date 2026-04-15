@@ -64,6 +64,20 @@ export default function RegisterForm({
     <div className="auth-container fade-in">
         <h2>Create Account</h2>
 
+        <div className="form-group">
+            <label htmlFor="fullname">Full name</label>
+            <input
+                id="fullname"
+                type="text"
+                value={fullname}
+                placeholder="Enter your full name..."
+                autoComplete="fullname"
+                maxLength={100}
+                onChange={onFullnameChange}
+            />
+            <p>Full name will be visible only to you and our organization</p>
+        </div>
+
         <form className="auth-form" onSubmit={onSubmit}>
             <div className="form-group">
                 <label htmlFor="username">Username</label>
@@ -78,6 +92,7 @@ export default function RegisterForm({
                     maxLength={50}
                     onChange={onUsernameChange}
                 />
+                <p>Username will be visible to all website visitors</p>
                 {fieldErrors.username && (
                     <span className="field-error">{fieldErrors.username}</span>
                 )}
@@ -125,17 +140,29 @@ export default function RegisterForm({
             </div>
 
             <div className="form-group">
-                <label htmlFor="country">Country</label>
-                <select id="country" autoComplete="country" name="country" onChange={onCountryChange}>
-                    <option key="initial-value" value="initial-value">
-                        Select country
-                    </option>
-                    {EUROPEAN_COUNTRIES.map(country => (
-                        <option key={country.code} value={country.code}>
-                            {country.name}
-                        </option>
-                    ))}
-                </select>
+                <label htmlFor="addressLine1">First address line</label>
+                <input
+                    id="addressLine1"
+                    type="text"
+                    value={addressLine1}
+                    placeholder="Enter your first address line..."
+                    autoComplete="addressLine1"
+                    maxLength={255}
+                    onChange={onAddressLine1Change}
+                />
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="addressLine2">Second address line</label>
+                <input
+                    id="addressLine2"
+                    type="text"
+                    value={addressLine2}
+                    placeholder="Enter your second address line..."
+                    autoComplete="addressLine2"
+                    maxLength={255}
+                    onChange={onAddressLine2Change}
+                />
             </div>
 
             <div className="form-group">
@@ -165,16 +192,17 @@ export default function RegisterForm({
             </div>
 
             <div className="form-group">
-                <label htmlFor="fullname">Full name</label>
-                <input
-                    id="fullname"
-                    type="text"
-                    value={fullname}
-                    placeholder="Enter your full name..."
-                    autoComplete="fullname"
-                    maxLength={100}
-                    onChange={onFullnameChange}
-                />
+                <label htmlFor="country">Country</label>
+                <select id="country" autoComplete="country" name="country" onChange={onCountryChange}>
+                    <option key="initial-value" value="initial-value">
+                        Select country
+                    </option>
+                    {EUROPEAN_COUNTRIES.map(country => (
+                        <option key={country.code} value={country.code}>
+                            {country.name}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div className="form-group">
@@ -191,32 +219,6 @@ export default function RegisterForm({
                     />
                 </div>
                 {fieldErrors.phone && <span className="field-error">{fieldErrors.phone}</span>}
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="addressLine1">First address line</label>
-                <input
-                    id="addressLine1"
-                    type="text"
-                    value={addressLine1}
-                    placeholder="Enter your first address line..."
-                    autoComplete="addressLine1"
-                    maxLength={255}
-                    onChange={onAddressLine1Change}
-                />
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="addressLine2">Second address line</label>
-                <input
-                    id="addressLine2"
-                    type="text"
-                    value={addressLine2}
-                    placeholder="Enter your second address line..."
-                    autoComplete="addressLine2"
-                    maxLength={255}
-                    onChange={onAddressLine2Change}
-                />
             </div>
 
             {error && <p className="error-message">{error}</p>}

@@ -13,6 +13,7 @@ import { Pagination } from "../../components/general/Pagination";
 export default function ShopPage() {
     const {
         products,
+        tableView,
         loading,
         error,
         filter,
@@ -26,6 +27,7 @@ export default function ShopPage() {
         onSortChange,
         onSortTypeChange,
         onIsFeaturedChange,
+        onViewChange,
         onPageChange
     } = useProductList();   
     const { categories } = useCategoryList();
@@ -35,11 +37,11 @@ export default function ShopPage() {
     useEffect(() => {
         const getProducts = async () => await getProductsWithFilters(savedQuery);
         getProducts();
-    }, [currentPage, totalPages]);
+    }, [currentPage, totalPages, filter]);
     
     const onNavigateToHome = () => navigate("/home");
     const onNavigateToShop = () => navigate("/shop-products");
-    const onNavigateToCart = () => navigate("/cart");
+    const onNavigateToCart = () => navigate("/cart-items");
     const onNavigateToOrders = () => navigate("/orders");
     const onNavigateToProfile = () => navigate("/profile");
     const onNavigateToSettings = () => navigate("/settings");
@@ -89,9 +91,11 @@ export default function ShopPage() {
 
             <ProductList
                 products={products}
+                tableView={tableView}
                 loading={loading}
                 error={error}
                 onProductClick={handleProductClick}
+                onViewChange={onViewChange}
             />
 
             <Pagination

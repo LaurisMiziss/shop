@@ -9,17 +9,17 @@ const filter = require('../utils/filter');
 // Available filters: name, category_id, sort, sort_type, price_min, price_max, is_featured
 const getProductsWithFilter = asyncHandler (async (req, res) => {
 
-    const name = req.query.name !== undefined ? req.query.name : "";
+    const name =  req.query.name || "";
     const category_id = +req.query.category_id || undefined;
     const sort = req.query.sort || "name";
     const sort_type = req.query.sort_type || "DESC";
-    const price_min = req.query.price_min !== undefined ? +req.query.price_min : 0;
-    const price_max = req.query.price_max !== undefined ? +req.query.price_max : 10000;
+    const price_min = +req.query.price_min || 0;
+    const price_max = +req.query.price_max || 10000;
     const is_featured = !!req.query.is_featured;
     const limit = +req.query.limit || 10;
     const offset = +req.query.offset || 0;
-
-    const query = filter("products", category_id, sort, sort_type, price_min, price_max, is_featured, offset);
+    
+    const query = filter(false, "products", category_id, sort, sort_type, price_min, price_max, is_featured, offset);
 
     if (query === "Error") {
         return res.status(400).json({
@@ -32,7 +32,7 @@ const getProductsWithFilter = asyncHandler (async (req, res) => {
     
     res.status(200).json({
         success: true,
-        products: result,
+        data: result,
         info: "Retrieved products"
     });
 
@@ -61,10 +61,41 @@ const getProduct = asyncHandler (async (req, res) => {
 });
 
 // Admin role required to use below controllers
+const getAdminProductsWithFilter = asyncHandler (async (req, res) => {
+
+    const name =  req.query.name || "";
+    const category_id = +req.query.category_id || undefined;
+    const sort = req.query.sort || "name";
+    const sort_type = req.query.sort_type || "DESC";
+    const price_min = +req.query.price_min || 0;
+    const price_max = +req.query.price_max || 10000;
+    const is_featured = !!req.query.is_featured;
+    const limit = +req.query.limit || 10;
+    const offset = +req.query.offset || 0;
+    
+    const query = filter(true, "products", category_id, sort, sort_type, price_min, price_max, is_featured, offset);
+
+    if (query === "Error") {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid input"
+        });
+    }
+
+    const result = await Products.searchQuery(query, name, price_min, price_max, limit, offset);
+    
+    res.status(200).json({
+        success: true,
+        data: result,
+        info: "Retrieved products"
+    });
+
+});
+
 // Check if product name is taken
 const checkNameIsTaken = asyncHandler (async (req, res) => {
 
-    const { name } = req.query;
+    const { name, id } = req.query;
 
     if (!name) {
         return res.status(400).json({
@@ -73,7 +104,7 @@ const checkNameIsTaken = asyncHandler (async (req, res) => {
         });
     }
 
-    const message = await productsDuplicateCheck(name);
+    const message = await productsDuplicateCheck(name, id);
 
     if (message !== "Duplicates are not found") {
         return res.status(409).json({
@@ -106,7 +137,7 @@ const postProduct = asyncHandler (async (req, res) => {
         });
     }
 
-    const message = await productsDuplicateCheck(name);
+    const message = await productsDuplicateCheck(name, 10000000);
 
     if (message !== "Duplicates are not found") {
         return res.status(409).json({
@@ -185,7 +216,7 @@ const patchProductField = asyncHandler (async (req, res) => {
     const currentDate = new Date();
 
     if (name !== undefined) {
-        const message = await productsDuplicateCheck(name);
+        const message = await productsDuplicateCheck(name, product.id);
 
         if (message !== "Duplicates are not found") {
             return res.status(409).json({
@@ -193,7 +224,7 @@ const patchProductField = asyncHandler (async (req, res) => {
                 info: message
             });
         }
-
+        
         await Products.patchName(product_id, name, currentDate);
     }
 
@@ -228,9 +259,10 @@ const patchProductField = asyncHandler (async (req, res) => {
     }
 
     if (stock !== undefined) {
-        const decimals = countDecimals(stock);
+        const count = countDecimals(stock);
+        const decimals = unit === "pieces" ? 0 : 3;
 
-        if (stock < 0 || decimals !== 0) {
+        if (stock < 0 || count > decimals) {
             return res.status(400).json({
                 success: false,
                 info: "Invalid stock"
@@ -295,7 +327,7 @@ const patchProductField = asyncHandler (async (req, res) => {
 
         await Products.patchIsFeatured(product_id, is_featured, currentDate);
     }
-
+    
     res.status(200).json({
         success: true,
         info: "Product was updated"
@@ -328,6 +360,7 @@ const deleteProduct = asyncHandler (async (req, res) => {
 module.exports = {
     getProductsWithFilter,
     getProduct,
+    getAdminProductsWithFilter,
     checkNameIsTaken,
     postProduct,
     patchProductField,

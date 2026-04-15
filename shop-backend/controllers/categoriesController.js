@@ -2,10 +2,23 @@ const Categories = require('../models/Categories');
 const asyncHandler = require('../utils/asyncHandler');
 const categoriesDuplicateCheck = require('../utils/categoriesDuplicateCheck');
 
-// Get all active categories and count how many products are in each category
+// Get all categories and count how many products are in each category
 const getAllCategories = asyncHandler (async (req, res) => {
     
     const categories = await Categories.getAllCategories();
+
+    res.status(200).json({
+        success: true,
+        data: categories,
+        info: 'Retrieved categories'
+    });
+
+});
+
+// Get all active categories and count how many products are in each category
+const getAllActiveCategories = asyncHandler (async (req, res) => {
+    
+    const categories = await Categories.getAllActiveCategories();
 
     res.status(200).json({
         success: true,
@@ -224,6 +237,7 @@ const deleteCategory = asyncHandler (async (req, res) => {
 
 module.exports = {
     getAllCategories,
+    getAllActiveCategories,
     getProductsOfCategory,
     checkCategoryNameOrOrder,
     getCategory,

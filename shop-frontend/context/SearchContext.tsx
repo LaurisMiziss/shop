@@ -1,6 +1,8 @@
 import { createContext, useContext, useState , useEffect} from "react";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import type { Product } from "../types/products";
-import { getProductsWithFiltersApi } from "../api/products/getProductsWithFiltersApi";
+import { chooseApiFunction } from "../utils/chooseApiFunction";
 
 interface SearchContextType {
     searchQuery: string;
@@ -9,6 +11,7 @@ interface SearchContextType {
     products: Product[] | null;
     onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     saveQuery: () => void;
+    openDropdown: () => void;
     closeDropdown: () => void;
     clearSearch: () => void;
 }
@@ -20,6 +23,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     const [savedQuery, setSavedQuery] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
     const [products, setProducts] = useState<Product[] | null>(null);
+
+    const { user } = useAuth();
+    const location = useLocation();
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -34,7 +40,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
         const timeout = setTimeout(async () => {
             try {
-                const res = await getProductsWithFiltersApi(
+                setProducts(null);
+
+                const apiFunc = chooseApiFunction(user, location.pathname);
+                console.log(apiFunc)
+                const res = await apiFunc(
                     searchQuery, undefined, undefined, 
                     "DESC", undefined, undefined, undefined, 10, 0
                 );
@@ -50,9 +60,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
     const saveQuery = () => setSavedQuery(searchQuery);
 
+    const openDropdown = () => setShowDropdown(true);
+
     const closeDropdown = () => {
         setShowDropdown(false);
-        setProducts(null);
     };
 
     const clearSearch = () => setSearchQuery("");
@@ -64,7 +75,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
             products,
             saveQuery,
             showDropdown,
-            onSearchChange, 
+            onSearchChange,
+            openDropdown, 
             closeDropdown,
 
             clearSearch 

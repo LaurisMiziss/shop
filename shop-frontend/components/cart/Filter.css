@@ -1,0 +1,58 @@
+.filters {
+    width: 240px;
+    padding: 1rem;
+
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+
+    font-family: system-ui, sans-serif;
+}
+
+/* GROUP */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+/* LABEL */
+.filter-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* INPUTS */
+.filter-group select,
+.filter-group input[type="number"] {
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+/* RANGE */
+.filter-group input[type="range"] {
+    width: 100%;
+}
+
+/* PRICE INPUT ROW */
+.price-inputs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.price-inputs input {
+    width: 100%;
+}
+
+/* FOCUS */
+.filter-group select:focus,
+.filter-group input:focus {
+    border-color: #0077ff;
+}

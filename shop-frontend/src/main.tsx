@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { AuthProvider } from '../context/AuthContext.tsx';
-import { SearchProvider } from '../context/SearchContext.tsx';
 import App from './App.tsx';
 
 // online-shop-frontend/
@@ -41,9 +40,7 @@ import App from './App.tsx';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <SearchProvider>
-        <App />
-      </SearchProvider>
+          <App />
     </AuthProvider>
   </StrictMode>,
 )
