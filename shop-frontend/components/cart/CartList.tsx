@@ -1,13 +1,15 @@
 import "./CartList.css";
 import type { Cart } from "../../types/cart";
+import { Spinner } from "../general/spinner/Spinner";
+import { Alert } from "../general/alert/Alert";
 
 interface CartListProps {
     cart: Cart[] | null;
     selectedItems: Cart[] | null;
-    name: string;
     selected: {product: Cart, quantity: number} | null;
     loading: boolean;
     alert: {type: "success" | "error", message: string} | null;
+    view: "grid" | "table";
     updateSelected: (product: Cart, e: React.ChangeEvent<HTMLInputElement>) => void;
     onQuantityChange: ( e: React.KeyboardEvent<HTMLInputElement>) => void;
     onDeleteClick: (productId: number) => void;
@@ -16,12 +18,13 @@ interface CartListProps {
     removeAlert: () => void;
     selectItem: (selected: boolean, ci: Cart) => void;
     onNavigateToOrderCreation: () => void;
+    onRemoveSelectedCartItems: () => void;
 }
 
 export function CartList({
     cart,
+    view,
     selectedItems,
-    name,
     selected,
     loading,
     alert,
@@ -32,25 +35,24 @@ export function CartList({
     onNavigateToProductDetails,
     removeAlert,
     selectItem,
-    onNavigateToOrderCreation
+    onNavigateToOrderCreation,
+    onRemoveSelectedCartItems
 }: CartListProps) {
-    if (loading) {
-        return <p className="status-message">Loading products...</p>;
-    }
 
-    if (name.length > 0 && (!cart || cart.length === 0)) {
-        return  (
-            <p className="status-message">Products with such name are not found</p>
+    if (!cart || cart.length === 0) {
+        return (
+            <div className="centred-content">
+                <p>Your cart is empty...</p>
+                <p onClick={onNavigateToShop}><b>Click me to search for a products!</b></p>
+            </div>
         );
     }
 
-    if (!cart || cart.length === 0) {
-        return  (
-            <p className="status-message">
-                You cart is empty...
-                <br />
-                <a onClick={onNavigateToShop}>Click me to visit shop page!</a>
-                </p>
+    if (loading) {
+        return (
+            <div className="centred-content">
+                <Spinner size={32} />
+            </div>
         );
     }
 
@@ -70,23 +72,117 @@ export function CartList({
         <div className="cart-container">
 
             {/* ALERT */}
-            <div className="alert-container" onMouseEnter={removeAlert}>
-                {alert && (
-                    <div className={`alert ${alert.type}`}>
-                        {alert.message}
-                    </div>
-                )}
-            </div>
+            <Alert alert={alert} onRemoveAlert={removeAlert} />
 
-            {/* CART LIST */}
-            <div className="cart-grid">
+            {view === "table" ? (
+                <div>
+
+                    <table className="cart-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Selected</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Quantity</th>
+                                <th>Total price</th>
+                                <th>Action</th>
+                            </tr>
+                            
+                        </thead>
+
+                        <tbody>
+                            {cart.map((ci) => {
+                                const totalItemCost = ci.quantity * +ci.price;
+                                const result = isSelected(ci);
+                                if (result) totalCost+= totalItemCost;
+                                return (
+                                    <tr
+                                        key={ci.id}
+                                        className="cart-table-row"
+                                    >   
+
+                                        <td onClick={() => selectItem(result, ci)}>
+                                            <div className={result ? "selected-circle" : "not-selected-circle"}>
+                                                {result ? "O" : "X"}
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <img
+                                                src={ci.image_url ? ci.image_url : undefined}
+                                                alt={ci.name}
+                                                className="cart-table-image"
+                                            />
+                                        </td>
+
+                                        <td className="cart-table-name" onClick={() => onNavigateToProductDetails(ci.product_id)}>
+                                            {ci.name}
+                                        </td>
+
+                                        <td className="cart-table-price">
+                                            €{ci.price} / {ci.unit}
+                                        </td>
+
+                                        <td
+                                            className={
+                                                +ci.stock > 0
+                                                    ? "cart-table-stock"
+                                                    : "cart-table-stock out"
+                                            }
+                                        >
+                                            {ci.stock > 0
+                                            ? `${ci.stock} left`
+                                            : "Out of stock"}
+                                        </td>
+
+                                        <td className="cart-table-quantity">
+                                            <input
+                                                type="number"
+                                                value={selected && ci.product_id === selected.product.product_id ? selected.quantity : ci.quantity}
+                                                min="0"
+                                                onChange={(e) => updateSelected(ci, e)}
+                                                onKeyDown={(e) =>
+                                                    onQuantityChange(e)
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="cart-table-ci-price">
+                                            Price for item: €{totalItemCost.toFixed(2)}
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                className="cart-card-delete"
+                                                onClick={() => onDeleteClick(ci.product_id)}
+                                            >
+                                                Remove
+                                            </button>
+                                        </td>
+
+                                    </tr>
+
+                            )})}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            ) : (
+                <div className="cart-grid">
+
                 {cart.map((ci) => {
                     const totalItemCost = ci.quantity * +ci.price;
                     const result = isSelected(ci);
                     if (result) totalCost+= totalItemCost;
                     return (
                         <div key={ci.id} className="cart-card">
-                            <div className={result ? "selected" : "not-selected"} onClick={() => selectItem(result ? true : false, ci)}>
+                            <div className={result ? "selected" : "not-selected"} onClick={() => selectItem(result, ci)}>
                                 {result ? "O" : "X"}
                             </div>
 
@@ -136,13 +232,11 @@ export function CartList({
                                 </div>
 
                                 {/* TOTAL PRICE */}
-                                {cart.length > 0 && (
-                                    <div className="cart-card-total-item">
-                                        <p>
-                                            Price for item: €{totalItemCost.toFixed(2)}
-                                        </p>
-                                    </div>
-                                )}
+                                <div className="cart-card-total-item">
+                                    <p>
+                                        Price for item: €{totalItemCost.toFixed(2)}
+                                    </p>
+                                </div>
 
                                 {/* ACTIONS */}
                                 <button
@@ -153,19 +247,28 @@ export function CartList({
                                 </button>
                             </div>
                         </div>
+
                     )
+
                 })}
+
             </div>
+
+            )}
 
             {/* FOOTER */}
             <div className="cart-footer">
                 <p className="cart-card-total">
-                    Total price: €{totalCost.toFixed(2)}
+                    Total price: <b>€{totalCost.toFixed(2)}</b>
                 </p>
-                <button className="pay-button" onClick={onNavigateToOrderCreation}>
+                <button className={`pay-button ${(!selectedItems || selectedItems.length === 0) && "disabled"}`} onClick={onNavigateToOrderCreation}>
                     Pay
                 </button>
+                <button className={`delete-button ${(!selectedItems || selectedItems.length === 0) && "disabled"}`} onClick={onRemoveSelectedCartItems}>
+                    Remove
+                </button>
             </div>
+
         </div>
     );
 }

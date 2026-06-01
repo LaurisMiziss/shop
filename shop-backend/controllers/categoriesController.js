@@ -2,7 +2,7 @@ const Categories = require('../models/Categories');
 const asyncHandler = require('../utils/asyncHandler');
 const categoriesDuplicateCheck = require('../utils/categoriesDuplicateCheck');
 
-// Get all categories and count how many products are in each category
+// Get all categories
 const getAllCategories = asyncHandler (async (req, res) => {
     
     const categories = await Categories.getAllCategories();
@@ -65,10 +65,11 @@ const getProductsOfCategory = asyncHandler (async (req, res) => {
 // Check if category name or display_order are taken
 const checkCategoryNameOrOrder = asyncHandler (async (req, res) => {
 
-    const name = req.query.name;
+    const name = req.query.name || undefined;
     const display_order = +req.query.display_order || undefined;
+    const category_id = +req.query.category_id || undefined;
 
-    const message = await categoriesDuplicateCheck(name, display_order);
+    const message = await categoriesDuplicateCheck(name, display_order, category_id);
 
     if (message !== "Duplicates are not found") {
         return res.status(409).json({
@@ -118,7 +119,7 @@ const postCategory = asyncHandler (async (req, res) => {
         });
     }
 
-    const message = await categoriesDuplicateCheck(name, display_order);
+    const message = await categoriesDuplicateCheck(name, display_order, undefined);
 
     if (message !== "Duplicates are not found") {
         return res.status(409).json({
@@ -152,7 +153,7 @@ const patchCategoryField = asyncHandler (async (req, res) => {
     }
 
     if (name !== undefined) {
-        const message = await categoriesDuplicateCheck(name, undefined);
+        const message = await categoriesDuplicateCheck(name, undefined, category_id);
 
         if (message !== "Duplicates are not found") {
             return res.status(409).json({
@@ -182,7 +183,7 @@ const patchCategoryField = asyncHandler (async (req, res) => {
             });
         }
 
-        const message = await categoriesDuplicateCheck(undefined, order);
+        const message = await categoriesDuplicateCheck(undefined, order, category_id);
 
         if (message !== "Duplicates are not found") {
             return res.status(409).json({

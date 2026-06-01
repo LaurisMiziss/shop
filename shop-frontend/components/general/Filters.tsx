@@ -1,11 +1,13 @@
 import "./Filter.css";
-
 import type { Filter } from "../../types/filter";
 import type { Category } from "../../types/category";
+import { ViewButtonGroup } from "./viewButtonGroup/ViewButtonGroup";
     
 interface FilterProps {
     filter: Filter;
+    view: "grid" | "table"
     categories: Category[] | null;
+    onViewChange: (view: "table" | "grid") => void;
     onFilterPriceChange: (scale: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     onSortChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -15,7 +17,9 @@ interface FilterProps {
 
 export function Filters({
     filter,
+    view,
     categories,
+    onViewChange,
     onFilterPriceChange,
     onCategoryChange,
     onSortChange,
@@ -24,6 +28,13 @@ export function Filters({
 }: FilterProps) {
     return (
         <div className="filters">
+
+            <div className="centred-content">
+
+                <ViewButtonGroup view={view} onViewChange={onViewChange} />
+
+            </div>
+
             {/* CATEGORY */}
             <div className="filter-group">
                 <label>Category</label>

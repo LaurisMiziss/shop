@@ -10,6 +10,51 @@ const getOrder = async (order_id) => {
     return result.rows[0];
 };
 
+const getOrderById = async (order_id) => {
+    const result = await pool.query(
+        `SELECT
+            o.id,
+            o.user_id,
+            o.total_amount,
+            o.status,
+            o.payment_status,
+            o.created_at,
+            o.customer_notes,
+            o.admin_notes,
+
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'product_id', oi.product_id,
+                        'product_name', oi.product_name,
+                        'product_price', oi.product_price,
+                        'quantity', oi.quantity,
+                        'subtotal', oi.subtotal
+                    )
+                ) FILTER (WHERE oi.id IS NOT NULL),
+                '[]'
+            ) AS items
+
+        FROM orders o
+        LEFT JOIN order_items oi
+            ON oi.order_id = o.id
+            WHERE order_id = $1
+        GROUP BY o.id`,
+        [order_id]
+    );
+    
+    return result.rows[0];
+};
+
+const getAllOrdersAndItems = async (query, limit, offset) => {
+    const result = await pool.query(
+        `${query}`,
+        [limit, offset]
+    );
+
+    return result.rows;
+};
+
 const getOrdersAndItems = async (user_id, limit, offset) => {
     const result = await pool.query(
         `SELECT
@@ -92,7 +137,9 @@ const deleteOrder = async (order_id) => {
 };
 
 module.exports = {
+    getAllOrdersAndItems,
     getOrder,
+    getOrderById,
     getOrdersAndItems,
     patchCustomerNotes,
     patchOrderStatus,

@@ -1,8 +1,6 @@
 import { createContext, useContext, useState , useEffect} from "react";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "./AuthContext";
 import type { Product } from "../types/products";
-import { chooseApiFunction } from "../utils/chooseApiFunction";
+import { getProductsWithFiltersApi } from "../api/products/getProductsWithFiltersApi";
 
 interface SearchContextType {
     searchQuery: string;
@@ -24,9 +22,6 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [products, setProducts] = useState<Product[] | null>(null);
 
-    const { user } = useAuth();
-    const location = useLocation();
-
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         setShowDropdown(true);
@@ -42,14 +37,15 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
             try {
                 setProducts(null);
 
-                const apiFunc = chooseApiFunction(user, location.pathname);
-                console.log(apiFunc)
-                const res = await apiFunc(
+                const res = await getProductsWithFiltersApi(
                     searchQuery, undefined, undefined, 
                     "DESC", undefined, undefined, undefined, 10, 0
                 );
+
                 if (!res) return;
+
                 setProducts(res);
+
             } catch (err) {
                 console.error(err);
             }
@@ -78,7 +74,6 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
             onSearchChange,
             openDropdown, 
             closeDropdown,
-
             clearSearch 
         }}>
             {children}

@@ -1,61 +1,79 @@
 import "./Navbar.css";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSearch } from "../../context/SearchContext";
 import { useAuth } from "../../context/AuthContext";
 
 interface NavbarProps {
-    onNavigateToHome: () => void;
-    onNavigateToShop: () => void;
-    onNavigateToCart: () => void;
-    onNavigateToOrders: () => void;
-    onNavigateToProfile: () => void;
-    onNavigateToSettings: () => void;
     onSearchClick: () => void;
     onProductClick: (productId: number) => void;
-    onNavigateToAdminPanel: () => void;
 }
 
-export function Navbar({
-    onNavigateToHome,
-    onNavigateToShop,
-    onNavigateToCart,
-    onNavigateToOrders,
-    onNavigateToProfile,
-    onNavigateToSettings,
-    onSearchClick,
-    onProductClick,
-    onNavigateToAdminPanel
-}: NavbarProps) {
+export function Navbar({ onSearchClick, onProductClick }: NavbarProps) {
     const { searchQuery, showDropdown, products, onSearchChange, openDropdown, closeDropdown } = useSearch();
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const onExit = () => {
+        localStorage.removeItem("token");
+        navigate("login");
+    };
 
     return (
         <nav>
-            <li className="nav-item">
-                <a className="nav-link active" aria-current="page" onClick={onNavigateToHome}>Home</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" onClick={onNavigateToShop}>Shop</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" onClick={onNavigateToCart}>Cart</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" onClick={onNavigateToOrders}>Orders</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" onClick={onNavigateToProfile}>Profile</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" onClick={onNavigateToSettings}>Settings</a>
-            </li>
-            {user && user.role === "admin" && (
+            <ul>
+                <img src="https://cdn-icons-png.flaticon.com/512/4215/4215714.png" width={`45px`} />
+                
                 <li className="nav-item">
-                    <a className="nav-link" onClick={onNavigateToAdminPanel}>Admin Panel</a>
+                    <button className={`nav-link ${location.pathname.includes("/shop-products") ? "active" : ""}`} onClick={() => navigate("/shop-products")}>Shop</button>
                 </li>
-            )}
+                <li className="nav-item">
+                    <button className={`nav-link ${location.pathname === "/cart-items" ? "active" : ""}`} onClick={() => navigate("/cart-items")}>Cart</button>
+                </li>
+                <li className="nav-item">
+                    <button className={`nav-link ${location.pathname.includes("/orders") ? "active" : ""}`} onClick={() => navigate("/orders")}>Orders</button>
+                </li>
+                <li className="nav-item">
+                    <button className={`nav-link ${location.pathname.includes("/profile") ? "active" : ""}`} onClick={() => navigate("/profile")}>Profile</button>
+                </li>
+                <li className="nav-item">
+                    <button className={`nav-link ${location.pathname === "/settings" ? "active" : ""}`} onClick={() => navigate("/settings")}>Settings</button>
+                </li>
+                {user && user.role === "admin" && (
+                    <li className="nav-item admin-item">
+                        <span
+                            className={`nav-link ${location.pathname.includes("/admin-panel") ? "active" : ""}`}
+                            onClick={() => navigate("/admin-panel")}
+                        >
+                            Admin Panel
+                        </span>
+
+                        <ul className="admin-submenu">
+
+                            <li>
+                                <button className="nav-link" onClick={() => navigate("/admin-panel-user-list")}>Users</button>
+                            </li>
+
+                            <li>
+                                <button className="nav-link" onClick={() => navigate("/admin-panel-product-list")}>Products</button>
+                            </li>
+
+                            <li>
+                                <button className="nav-link" onClick={() => navigate("/admin-panel-category-list")}>Categories</button>
+                            </li>
+
+                            <li>
+                                <button className="nav-link" onClick={() => navigate("/admin-panel-order-list")}>Orders</button>
+                            </li>
+
+                        </ul>
+                    </li>
+                )}
+            </ul>
             
-            <div style={{ position: "relative" }}>
+            <div className="nav-right">
                 <input
+                    className="nav-input"
                     type="text"
                     value={searchQuery}
                     placeholder="Search products..."
@@ -63,10 +81,19 @@ export function Navbar({
                 />
 
                 <button
+                    className="nav-button"
                     type="button"
                     onClick={onSearchClick}
                 >
                     Search
+                </button>
+
+                <button
+                    className="exit-btn"
+                    type="button"
+                    onClick={onExit}
+                >
+                    ➜]
                 </button>
 
                 {/* invisible box to trigger search list, if mouse enters */}

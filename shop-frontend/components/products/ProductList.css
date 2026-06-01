@@ -1,3 +1,8 @@
+.product-list-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
 /* GRID LAYOUT */
 .product-grid {
     display: grid;
@@ -12,6 +17,7 @@
     background: white;
     border: 1px solid #eee;
     border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 
     overflow: hidden;
     cursor: pointer;

@@ -2,8 +2,10 @@ const Users = require('../models/Users');
 const Sessions = require('../models/Sessions');
 const helpers = require('../utils/helpers');
 const asyncHandler = require('../utils/asyncHandler');
+const pool = require('../config/db');
 const usersDuplicateCheck = require('../utils/usersDuplicateCheck');
 const validateEmailFormat = require('../utils/validateEmailFormat');
+const userQueryFilter = require('../utils/userQueryFilter');
 
 // User registration
 const register = asyncHandler (async (req, res) => {
@@ -150,11 +152,13 @@ const loginByToken = asyncHandler (async (req, res) => {
 });
 
 // Validate name, email or phone
-const validateField =  asyncHandler (async (req, res) => {
+const validateField = asyncHandler (async (req, res) => {
 
-    const { username, email, phone } = req.query;
+    const { value, field } = req.query;
 
-    const message = await usersDuplicateCheck(username, email, phone);
+    const user_id = req.user.id ? req.user.id : null;
+
+    const message = await usersDuplicateCheck(value, field, user_id);
 
     if (message !== "Duplicates are not found") {
         return res.status(409).json({
@@ -167,6 +171,20 @@ const validateField =  asyncHandler (async (req, res) => {
             info: message
         });
     }
+
+});
+
+const getUserSettings = asyncHandler (async (req, res) => {
+    
+    const user_id = +req.user.id;
+
+    const data = await Users.getUserSettings(user_id);
+
+    res.status(200).json({
+        success: true,
+        info: "User's settings was successfully retrieved",
+        data: data
+    });
 
 });
 
@@ -210,7 +228,6 @@ const patchUserField = asyncHandler (async (req, res) => {
         username, email, full_name, phone, address_line1, 
         address_line2, city, postal_code, country, password
     } = req.body;
-
 
     const user = await Users.getUser(user_id);
 
@@ -321,11 +338,109 @@ const patchUserField = asyncHandler (async (req, res) => {
 
 });
 
+// Patch user's settings, available fields: language, theme
+const patchSetting = asyncHandler (async (req, res) => {
+
+    const user_id = +req.user.id;
+
+    const { language, theme } = req.body;
+    
+    if (language) {
+        const allowedOptions = ["EN", "LV"];
+
+        if (!allowedOptions.includes(language)) return res.status(404).json({
+            success: false,
+            info: "This language setting is not available"
+        });
+
+        await Users.patchLanguage(user_id, language);
+    }
+
+    if (theme) {
+        const allowedOptions = ["DARK", "LIGHT"];
+
+        if (!allowedOptions.includes(theme)) return res.status(404).json({
+            success: false,
+            info: "This theme setting is not available"
+        });
+
+        await Users.patchTheme(user_id, theme);
+    }
+
+    res.status(200).json({
+        success: true,
+        info: "User's settings was updated"
+    });
+
+});
+
+// Patch user's password
+const patchPassword = asyncHandler (async(req, res) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        await client.query("BEGIN");
+
+        const user_id = +req.user.id;
+
+        const { oldPassword, newPassword } = req.body;
+
+        const user = await Users.getUser(user_id);
+
+        const matches = await helpers.verifyPassword(oldPassword, user.password_hash);
+
+        if (!matches) {
+            return res.status(400).json({
+                success: false,
+                info: "Invalid password"
+            });
+        }
+
+        if ((newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) || (oldPassword === newPassword)) {
+            return res.status(400).json({
+                success: false,
+                info: "New password has a wrong format or is exactly the same as the old password"
+            });
+        }
+
+        const password_hash = await helpers.hashPassword(newPassword);
+
+        await Users.patchPasswordHash(user_id, password_hash);
+
+        await client.query("COMMIT");
+
+        res.status(200).json({
+            success: true,
+            info: "User's password was successfully updated"
+        });
+
+    } catch (err) {
+
+        await client.query("ROLLBACK");
+        throw err;
+
+    } finally {
+
+        client.release();
+
+    }
+});
+
 // Delete user
 const deleteUser = asyncHandler (async (req, res) => {
 
     const user_id = +req.user.id;
 
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(404).json({
+            success: false,
+            info: "Password is missing"
+        });
+    }
 
     const user = await Users.getUser(user_id);
 
@@ -336,8 +451,17 @@ const deleteUser = asyncHandler (async (req, res) => {
         });
     }
 
-    await Users.deleteUser(user_id);
+    const result = await helpers.verifyPassword(password, user.password_hash);
 
+    if (!result) {
+        return res.status(404).json({
+            success: false,
+            info: "Wrong password was provided"
+        });
+    }
+
+    await Users.deleteUser(user_id);
+    
     res.status(200).json({
         success: true,
         info: "User was deleted"
@@ -346,6 +470,72 @@ const deleteUser = asyncHandler (async (req, res) => {
 });
 
 // Admin role required to use below controllers
+// Get detailed information about a user
+const getUser = asyncHandler ( async (req, res) => {
+
+    const user = req.user;
+    const user_id = +req.params.user_id || undefined;
+
+    if (!Number.isInteger(user_id)) {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid user_id"
+        });
+    }
+
+    const retrievedUser = await Users.getUser(user_id);
+
+    if (!retrievedUser) {
+        return res.status(404).json({
+            success: false,
+            info: "User with such ID is not found"
+        });
+    }
+    
+    const { password_hash, ...userWithoutPasswordHash } = retrievedUser;
+
+    res.status(200).json({
+        success: true,
+        data: userWithoutPasswordHash,
+        info: "User was successfully retrieved"
+    });
+
+});
+
+// Get all users
+const getAllUsers = asyncHandler ( async (req, res) => {
+
+    const user = req.user;
+    const limit = Number(req.query.limit) || 10;
+    const offset = Number(req.query.offset) || 0;
+    const user_id = +req.query.user_id || undefined;
+
+    if (!Number.isInteger(offset) || !Number.isInteger(limit) || (user_id && !Number.isInteger(user_id))) {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid offset, limit or user_id"
+        });
+    }
+
+    const query = userQueryFilter(user.role === "admin", limit, offset, user_id);
+
+    if (query === "Error") {
+        return res.status(400).json({
+            success: false,
+            info: "Not allowed"
+        });
+    }
+
+    const users = await Users.getAllUsers(query, limit, offset);
+
+    res.status(200).json({ 
+        success: true, 
+        data: users, 
+        info: "Retrieved users" 
+    });
+
+});
+
 // Patch user's role
 const patchRole = asyncHandler (async (req, res) => {
 
@@ -390,8 +580,13 @@ module.exports = {
     login,
     loginByToken,
     validateField,
+    getUserSettings,
     verifyAction,
     patchUserField,
+    patchSetting,
+    patchPassword,
     deleteUser,
+    getUser,
+    getAllUsers,
     patchRole
 };

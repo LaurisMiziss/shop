@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { SearchProvider } from "../context/SearchContext";
 import { CartProvider } from "../context/CartContext";
+import { SettingsProvider } from "../context/SettingsContext";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import HomePage from "../pages/HomePage";
@@ -12,10 +13,18 @@ import OrderCreationPage from "../pages/orders/OrderCreationPage";
 import OrderFinish from "../pages/orders/OrdersFinish";
 import OrderList from "../pages/orders/OrderList";
 import AdminHomePage from "../pages/admin/AdminHomePage";
-import AdminProductList from "../pages/admin/products/AdminProductList";
-import AdminEditProduct from "../pages/admin/products/AdminEditProduct";
-import AdminCategoryListPage from "../pages/admin/categories/AdminCategoryListPage"
-import AdminCategoryEditPage from "../pages/admin/categories/AdminCategoryEditPage";
+import ProductListPage from "../pages/admin/products/ProductListPage";
+import EditProductPage from "../pages/admin/products/EditProductPage";
+import CategoryListPage from "../pages/admin/categories/CategoryListPage"
+import CategoryEditPage from "../pages/admin/categories/CategoryEditPage";
+import OrderListPage from "../pages/admin/orders/OrderListPage";
+import OrderDetailsPage from "../pages/admin/orders/OrderDetailsPage";
+import UserListPage from "../pages/admin/users/UserListPage";
+import UserDetailsPage from "../pages/admin/users/UserDetailsPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import SettingsPage from "../pages/settings/SettingsPage";
+import ChangePasswordPage from "../pages/profile/ChangePasswordPage";
+import ProfileDeletePage from "../pages/profile/ProfileDeletePage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -25,34 +34,49 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <SearchProvider>
-          <Routes>
-            {/* public routes — anyone can visit */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/shop-products" element={<ShopPage />} />
-            <Route path="/shop-products-details" element={<ProductDetailsPage />} />
-            <Route path="/cart-items" element={<CartPage />} />
-            <Route path="/orders-post" element={<OrderCreationPage />} />
-            <Route path="/orders-post-finish" element={<OrderFinish />} />
-            <Route path="/orders" element={<OrderList />} />
+      <SettingsProvider>
+        <CartProvider>
+          <SearchProvider>
+            <Routes>
+              {/* public routes — anyone can visit */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/shop-products" element={<ShopPage />} />
+              <Route path="/shop-products" element={<ShopPage />} />
+              <Route path="/shop-products-details" element={<ProductDetailsPage />} />
+              <Route path="/cart-items" element={<CartPage />} />
+              <Route path="/orders-post" element={<OrderCreationPage />} />
+              <Route path="/orders-post-finish" element={<OrderFinish />} />
+              <Route path="/orders" element={<OrderList />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile-change-password" element={<ChangePasswordPage />} />
+              <Route path="/profile-delete" element={<ProfileDeletePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
 
-            <Route path="/admin-panel" element={<AdminHomePage />} />
-            <Route path="/admin-panel-product-list" element={<AdminProductList />} />
-            <Route path="/admin-panel-edit-product" element={<AdminEditProduct />} />
-            <Route path="/admin-panel-category-list" element={<AdminCategoryListPage />} />
-            <Route path="/admin-panel-edit-category" element={<AdminCategoryEditPage />} />
+              {/* restricted routes - only for user with "admin" role */}
+              <Route path="/admin-panel" element={<AdminHomePage />} />
 
-            {/* if someone visits "/" redirect them */}
-            <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="/admin-panel-product-list" element={<ProductListPage />} />
+              <Route path="/admin-panel-edit-product" element={<EditProductPage />} />
 
-            {/* catch any unknown url */}
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </SearchProvider>
-      </CartProvider>
+              <Route path="/admin-panel-category-list" element={<CategoryListPage />} />
+              <Route path="/admin-panel-edit-category" element={<CategoryEditPage />} />
+              
+              <Route path="/admin-panel-order-list" element={<OrderListPage />} />
+              <Route path="/admin-panel-edit-order" element={<OrderDetailsPage />} />
+
+              <Route path="/admin-panel-user-list" element={<UserListPage />} />
+              <Route path="/admin-panel-edit-user" element={<UserDetailsPage />} />
+
+              {/* if someone visits "/" redirect them */}
+              <Route path="/" element={<Navigate to="/login" />} />
+
+              {/* catch any unknown url */}
+              <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+          </SearchProvider>
+        </CartProvider>
+      </SettingsProvider>
     </BrowserRouter>
   );
 }

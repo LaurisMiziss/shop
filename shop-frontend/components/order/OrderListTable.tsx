@@ -1,10 +1,13 @@
 import "./OrderListTable.css";
 import type { Order } from "../../types/order";
+import { Spinner } from "../general/spinner/Spinner";
+import { Alert } from "../general/alert/Alert";
 
 interface OrderListTableProps {
     orders: Order[] | null;
     selected: {orderId: number, note: string | null} | null;
     alert: {type: "success" | "error", message: string} | null;
+    loading: boolean;
     onNoteChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     handleEditChange: (orderId: number) => void;
     onSaveOrUndo: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
@@ -17,6 +20,7 @@ export function OrderListTable({
     orders,
     selected,
     alert,
+    loading,
     handleEditChange,
     onNoteChange,
     onSaveOrUndo,
@@ -25,26 +29,28 @@ export function OrderListTable({
     removeAlert
 }: OrderListTableProps) {
 
-  if (!orders) {
-      return (
-          <div>
-              <h3>Orders</h3>
-              <p>Your order list is empty</p>
-          </div>
-      );
-  }
+    if (loading) {
+        return (
+            <div className="centred-content">
+                <Spinner size={32} />
+            </div>
+        );
+    }
+
+    if (!orders) {
+        return (
+            <div className="centred-content">
+                <h3>Orders</h3>
+                <p>Your order list is empty</p>
+            </div>
+        );
+    }
 
   return (
     <div className="orders-container">
 
         {/* ALERT */}
-        <div className="alert-container" onMouseEnter={removeAlert}>
-            {alert && (
-                <div className={`alert ${alert.type}`}>
-                    {alert.message}
-                </div>
-            )}
-        </div>
+        <Alert alert={alert} onRemoveAlert={removeAlert} />
 
         <h3 className="orders-title">Orders</h3>
 
@@ -97,6 +103,7 @@ export function OrderListTable({
                                 <button
                                     type="button"
                                     onClick={() => handleEditChange(order.id)}
+                                    className="edit-btn"
                                 >
                                     Edit
                                 </button>
@@ -129,7 +136,7 @@ export function OrderListTable({
 
                         {(order.status === "delivered" || order.status === "cancelled") && (
                             <button
-                                className="delete-button"
+                                className="delete-order-button"
                                 onClick={() => onDeleteOrder(order.id)}
                             >
                                 Delete

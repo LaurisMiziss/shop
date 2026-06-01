@@ -10,6 +10,26 @@ const getUser = async (user_id) => {
     return result.rows[0];
 };
 
+const getAllUsers = async (query, limit, offset) => {
+    const result = await pool.query(
+        `${query}`,
+        [limit, offset]
+    );
+
+    return result.rows;
+};
+
+const getUserSettings = async (user_id) => {
+    const result = await pool.query(
+        `SELECT theme, language
+        FROM users
+        WHERE id = $1`,
+        [user_id]
+    );
+
+    return result.rows;
+}
+
 const validateUsername = async (username) => {
     const result = await pool.query(
         `SELECT * FROM users WHERE username = $1;`,
@@ -146,6 +166,22 @@ const patchLastLogin = async (user_id, last_login) => {
     );
 };
 
+const patchTheme = async (user_id, theme) => {
+    await pool.query(
+        `UPDATE users SET theme = $2
+        WHERE id = $1`,
+        [user_id, theme]
+    );
+};
+
+const patchLanguage = async (user_id, lang) => {
+    await pool.query(
+        `UPDATE users SET language = $2
+        WHERE id = $1`,
+        [user_id, lang]
+    );
+};
+
 const deleteUser = async (user_id) => {
     await pool.query(
         `DELETE FROM users
@@ -156,10 +192,12 @@ const deleteUser = async (user_id) => {
 
 module.exports = {
     getUser,
+    getAllUsers,
     validateUsername,
     validateEmail,
     validatePhone,
     createUser,
+    getUserSettings,
     patchUsername,
     patchEmail,
     patchPasswordHash,
@@ -172,5 +210,7 @@ module.exports = {
     patchPostalCode,
     patchCountry,
     patchLastLogin,
+    patchTheme,
+    patchLanguage,
     deleteUser
 };

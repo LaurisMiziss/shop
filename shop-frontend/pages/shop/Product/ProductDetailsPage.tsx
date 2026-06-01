@@ -1,3 +1,4 @@
+import "../../../components/products/ProductPage.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { ProductDetail } from "../../../types/products";
 import { useSearch } from "../../../context/SearchContext";
@@ -12,24 +13,16 @@ export default function ProductDetailsPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const product = location.state?.product as ProductDetail | null;
-    const { searchQuery, saveQuery, clearSearch } = useSearch();
+    const { searchQuery, clearSearch } = useSearch();
     const { isAuthenticated } = useAuth();
     const { cart, getCartItems } = useCart();
     const { getProductDetails, getProductsWithFilters } = useProductList();
     const { quantity, loading, alert, onQuantityChange, removeAlert, onAddToCart } = useProductDetails();
     
-    const onNavigateToHome = () => navigate("/home");
-    const onNavigateToShop = () => navigate("/shop-products");
-    const onNavigateToCart = () => navigate("/cart-items");
-    const onNavigateToOrders = () => navigate("/orders");
-    const onNavigateToProfile = () => navigate("/profile");
-    const onNavigateToSettings = () => navigate("/settings");
     const onNavigateToProductDetails = (product: ProductDetail | null) => navigate("/shop-products-details", {state: { product: product }});
 
     const handleSearchClick = async () => {
-        saveQuery();
-        await getProductsWithFilters(searchQuery);
-        onNavigateToShop();
+        navigate("/shop-products", { state: { query: searchQuery }});
         clearSearch();
     };
 
@@ -50,28 +43,31 @@ export default function ProductDetailsPage() {
     };
 
     return (
-        <div>
+        <div className="shop-page-layout">
+
             <Navbar
-                onNavigateToHome={onNavigateToHome}
-                onNavigateToShop={onNavigateToShop}
-                onNavigateToCart={onNavigateToCart}
-                onNavigateToOrders={onNavigateToOrders}
-                onNavigateToProfile={onNavigateToProfile}
-                onNavigateToSettings={onNavigateToSettings}
                 onSearchClick={handleSearchClick}
                 onProductClick={handleProductClick}
             />
 
-            <ProductDetails
-                product={product}
-                cart={cart}
-                quantity={quantity}
-                loading={loading}
-                alert={alert}
-                onQuantityChange={onQuantityChange}
-                handleAddToCart={handleAddToCart}
-                removeAlert={removeAlert}
-            />
+            <div className="shop-page-content product">
+
+                <div className="shop-main">
+
+                    <ProductDetails
+                        product={product}
+                        cart={cart}
+                        quantity={quantity}
+                        loading={loading}
+                        alert={alert}
+                        onQuantityChange={onQuantityChange}
+                        handleAddToCart={handleAddToCart}
+                        removeAlert={removeAlert}
+                    />
+
+                </div>
+
+            </div>
 
         </div>
     );

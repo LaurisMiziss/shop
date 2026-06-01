@@ -13,6 +13,11 @@
     font-family: system-ui, sans-serif;
 }
 
+.view-buttons {
+    display: inline-flex;
+    justify-content: center;
+}
+
 /* GROUP */
 .filter-group {
     display: flex;

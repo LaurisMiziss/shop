@@ -6,6 +6,7 @@ export interface Category {
     display_order: number;
     is_active: boolean;
     created_at: string;
+    total: number | undefined;
 }
 
 export interface GetCategoryResponse {

@@ -5,6 +5,12 @@ export interface FieldErrors {
     phone: string;
 }
 
+export interface PasswordFieldErrors {
+    oldPassword: string;
+    newPassword: string;
+    newRepeatedPassword: string;
+}
+
 export interface OrderFieldErrors {
     shippingFullname: string;
     shippingAddressLine1: string;

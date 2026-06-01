@@ -1,17 +1,17 @@
 interface SearchQueryProps {
     totalCount: number;
-    savedQuery: string;
+    savedQuery: string | null;
 }
 
 export function SearchQuery({ totalCount, savedQuery }: SearchQueryProps) {
     return (
-        <div>
+        <div style={{margin: "1%"}}>
             {totalCount > 0  && savedQuery? (
-                <p>Was found {totalCount} products using keyword: "{savedQuery}"</p>
+                <p>Was found <b>{totalCount}</b> products using keyword: "<b>{savedQuery}</b>"</p>
             ) : !savedQuery ? (
                 <p></p>
             ) : (
-                <p>Nothing was found using keyword: "{savedQuery}", try different keyword</p>
+                <p>Nothing was found using keyword: "<b>{savedQuery}</b>", try different keyword</p>
             )}
         </div>
     );

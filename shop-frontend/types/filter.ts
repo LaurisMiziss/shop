@@ -1,4 +1,5 @@
 export interface Filter {
+    passedQuery: string;
     categoryId: number | undefined;
     sort: string;
     sortType: string | undefined;

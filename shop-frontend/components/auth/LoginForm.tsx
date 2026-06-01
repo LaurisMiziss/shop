@@ -1,3 +1,5 @@
+import "./LoginForm.css";
+
 interface LoginFormProps {
   email: string;
   password: string;
@@ -25,8 +27,10 @@ export default function LoginForm({
   onNavigateToHome,
   onNavigateToRegister,
 }: LoginFormProps) {
+
   return (
     <div className="auth-container fade-in">
+
       <h2>Log In</h2>
 
       <form className="auth-form" onSubmit={onSubmit}>
@@ -40,6 +44,7 @@ export default function LoginForm({
             placeholder="Enter your email"
             autoComplete="email"
             required
+            disabled={loading}
             onChange={onEmailChange}
           />
         </div>
@@ -54,6 +59,7 @@ export default function LoginForm({
               placeholder="Enter your password"
               autoComplete="current-password"
               required
+              disabled={loading}
               onChange={onPasswordChange}
             />
             <button type="button" className="toggle-password" onClick={onTogglePassword}>
@@ -78,6 +84,7 @@ export default function LoginForm({
       <p className="auth-switch" onClick={onNavigateToHome}>
         Continue without logging in{" "}
       </p>
+
     </div>
   );
 }

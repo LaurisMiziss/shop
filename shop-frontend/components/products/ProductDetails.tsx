@@ -1,6 +1,9 @@
 import "./ProductDetails.css";
+import { useState } from "react";
 import type { ProductDetail } from "../../types/products";
 import type { Cart } from "../../types/cart";
+import { Alert } from "../general/alert/Alert";
+import { Spinner } from "../general/spinner/Spinner";
 
 interface ProductDetailsProps {
     product: ProductDetail | null;
@@ -13,8 +16,35 @@ interface ProductDetailsProps {
     removeAlert: () => void;
 }
 
-export function ProductDetails({ product, cart, quantity, loading, alert, handleAddToCart, onQuantityChange, removeAlert }: ProductDetailsProps) {
-    if (!product) return null;
+export function ProductDetails({
+    product,
+    cart,
+    quantity,
+    loading,
+    alert,
+    handleAddToCart,
+    onQuantityChange,
+    removeAlert
+}: ProductDetailsProps) {
+    const [selectedImage, setSelectedImage] = useState(0);
+
+    if (!product) {
+        return (
+            <p>
+                Error 404
+                <br />
+                Product is not found
+            </p>
+        )
+    }
+
+    if (loading) {
+        return (
+            <div className="centred-content">
+                <Spinner size={32} />
+            </div>
+        );
+    }
 
     const images = product.images?.length
         ? product.images
@@ -26,28 +56,34 @@ export function ProductDetails({ product, cart, quantity, loading, alert, handle
 
     return (
         <div className="product-details">
-            {/* UPPER CENTER - ERROR/SUCCESS MESSAGES*/}
-            <div className="alert-container" onMouseEnter={removeAlert}>
-                {alert && (
-                    <div className={`alert ${alert.type}`}>
-                        {alert.message}
-                    </div>
-                )}
-            </div>
 
-            {/* LEFT - IMAGES */}
+            <Alert alert={alert} onRemoveAlert={removeAlert} />
+
+            {/* LEFT */}
             <div className="product-images">
-                {images.map((img, index) => (
-                    <img
-                        key={index}
-                        src={img}
-                        alt={`${product.name} ${index}`}
-                        className="product-image"
-                    />
-                ))}
+
+                {/* MAIN IMAGE */}
+                <img
+                    src={images[selectedImage] || ""}
+                    alt={product.name}
+                    className="product-main-image"
+                />
+
+                {/* THUMBNAILS */}
+                <div className="product-thumbnails">
+                    {images.map((img, index) => (
+                        <img
+                            key={index}
+                            src={img || ""}
+                            alt={`${product.name} ${index}`}
+                            className={`product-thumb ${selectedImage === index ? "active" : ""}`}
+                            onClick={() => setSelectedImage(index)}
+                        />
+                    ))}
+                </div>
             </div>
 
-            {/* RIGHT - INFO */}
+            {/* RIGHT */}
             <div className="product-info">
                 <h1>{product.name}</h1>
 
@@ -59,8 +95,8 @@ export function ProductDetails({ product, cart, quantity, loading, alert, handle
                     {product.description}
                 </p>
 
-                <p className="product-stock">
-                    {product.stock > 0
+                <p className={`product-stock ${+product.stock > 0 ? "in" : "out"}`}>
+                    {+product.stock > 0
                         ? `In stock (${product.stock})`
                         : "Out of stock"}
                 </p>
@@ -71,12 +107,25 @@ export function ProductDetails({ product, cart, quantity, loading, alert, handle
                     </p>
                 )}
 
-                <input type="number" value={quantity} onChange={onQuantityChange} min={minQuantity} max={product.stock} />
+                {/* QUANTITY + BUTTON */}
+                <div className="product-actions">
+                    <input
+                        type="number"
+                        value={quantity}
+                        onChange={onQuantityChange}
+                        min={minQuantity}
+                        max={product.stock}
+                        className="quantity-input"
+                    />
 
-                <button type="button" className={loading ? "add-to-cart-disabled" : "add-to-cart"} onClick={handleAddToCart}>
-                    {loading ? "Adding to Cart" : "Add to Cart"}
-                </button>
-                
+                    <button
+                        type="button"
+                        className={loading ? "add-to-cart-disabled" : "add-to-cart"}
+                        onClick={handleAddToCart}
+                    >
+                        {loading ? "Adding..." : "Add to Cart"}
+                    </button>
+                </div>
             </div>
         </div>
     );

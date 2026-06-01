@@ -11,10 +11,9 @@ const categoriesController = require('../controllers/categoriesController');
 router.get('/admin/check',
     requireAuth,
     requireAdmin,
-    validateQuery('display_order'),
     categoriesController.checkCategoryNameOrOrder
 );
-router.post('/admin',
+router.post('/admin/',
     requireAuth,
     requireAdmin,
     validateBody('display_order'),

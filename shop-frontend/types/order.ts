@@ -26,8 +26,10 @@ export interface Order {
     user_id: number;
     total_amount: number;
     status: string;
+    payment_status: string;
     created_at: string;
     customer_notes: string | null;
+    admin_notes: string | null;
     items: Item[];
     edit: boolean | undefined;
     total: number;
@@ -35,6 +37,6 @@ export interface Order {
 
 export interface GetOrderResponse {
     success: boolean;
-    data: Order[];
+    data: Order[] | Order;
     info: string;
 }

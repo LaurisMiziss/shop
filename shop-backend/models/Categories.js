@@ -2,8 +2,7 @@ const pool = require('../config/db');
 
 const getAllCategories = async () => {
     const result = await pool.query(
-        `SELECT ct.*, COUNT('id') FROM categories as ct
-        JOIN products as pr ON ct.id = pr.category_id
+        `SELECT ct.* FROM categories as ct
         GROUP BY ct.id
         ORDER BY display_order;`
     );
@@ -51,7 +50,7 @@ const checkCategoryExists = async (name) => {
         [name]
     );
 
-    return result.rows;
+    return result.rows[0];
 };
 
 const checkDisplayOrderExists = async (display_order) => {

@@ -1,0 +1,63 @@
+/* Whole page */
+.page-layout {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content wrapper */
+.page-content {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* cleaner than margin-bottom trick */
+}
+
+/* Section blocks (list, filters, etc.) */
+.section-container {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Optional: tighter container for inputs */
+.section-container.compact {
+  padding: 12px;
+}
+
+/* Pagination alignment */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.admin-page-layout {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-page-content {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.admin-page-content h2 {
+  grid-column: 1 / -1;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}

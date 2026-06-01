@@ -1,6 +1,7 @@
 const Orders = require('../models/Orders');
 const asyncHandler = require("../utils/asyncHandler");
 const pool = require('../config/db');
+const orderQueryFilter = require('../utils/orderQueryFilter');
 
 // Get orders and each order's details
 const getOrders = asyncHandler ( async (req, res) => {
@@ -224,8 +225,63 @@ const deleteOrder = asyncHandler (async (req, res) => {
 });
 
 // Admin role required to use below controller(s)
+// Get orders and each order's details
+const getOrderById = asyncHandler ( async (req, res) => {
+
+    const order_id = +req.params.order_id;
+
+    if (!Number.isInteger(order_id)) {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid order_id"
+        });
+    }
+
+    const order = await Orders.getOrderById(order_id);
+
+    res.status(200).json({
+        success: true,
+        data: order,
+        info: "Order was successfully retrieved"
+    })
+    
+});
+
+const getAllOrders = asyncHandler ( async (req, res) => {
+
+    const user = req.user;
+    const limit = Number(req.query.limit) || 10;
+    const offset = Number(req.query.offset) || 0;
+    const order_id = +req.query.order_id;
+
+    if (!Number.isInteger(offset) || !Number.isInteger(limit) || (order_id && !Number.isInteger(order_id))) {
+        return res.status(400).json({
+            success: false,
+            info: "Invalid offset, limit or order_id"
+        });
+    }
+
+    const query = orderQueryFilter(user.role === "admin", limit, offset, order_id);
+
+    if (query === "Error") {
+        return res.status(400).json({
+            success: false,
+            info: "Not allowed"
+        });
+    }
+
+    const orders = await Orders.getAllOrdersAndItems(query, limit, offset,);
+    
+    res.status(200).json({ 
+        success: true, 
+        data: orders, 
+        info: "Retrieved orders and details" 
+    });
+
+});
+
 // Available patch fields: status, payment_status, admin_notes
-const patchOrder = async (req, res) => {
+const patchOrder = asyncHandler (async (req, res) => {
 
     const order_id = +req.params.order_id;
     const { status, payment_status, admin_notes } = req.body;
@@ -242,10 +298,10 @@ const patchOrder = async (req, res) => {
     if (status !== undefined) {
         const statuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
-        if (order.status === status || !statuses.includes(status)) {
+        if (!statuses.includes(status)) {
             return res.status(400).json({
                 success: false,
-                info: "Order already has this status or was chosen wrong status" 
+                info: "Was chosen wrong status" 
             });
         }
         
@@ -255,10 +311,10 @@ const patchOrder = async (req, res) => {
     if (payment_status !== undefined) {
         const statuses = ["pending", "paid", "failed"];
 
-        if (order.payment_status === payment_status || !statuses.includes(payment_status)) {
+        if (!statuses.includes(payment_status)) {
             return res.status(400).json({
                 success: false,
-                info: "Order already has this payment status or was chosen wrong payment status" 
+                info: "Was chosen wrong payment status" 
             });
         }
 
@@ -281,12 +337,14 @@ const patchOrder = async (req, res) => {
         info: "Order was updated"
     });
 
-};
+});
 
 module.exports = {
     getOrders,
     postOrder,
     patchCustomerNotes,
     deleteOrder,
+    getOrderById,
+    getAllOrders,
     patchOrder
 };

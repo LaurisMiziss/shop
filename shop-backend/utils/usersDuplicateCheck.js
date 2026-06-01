@@ -1,31 +1,36 @@
 const Users = require('../models/Users');
 
-const usersDuplicateCheck = async (username = undefined, email = undefined, phone = undefined) => {
+const usersDuplicateCheck = async (value, field, user_id) => {
     
-    if (username !== undefined) {
+    if (field === "username") {
+        const found_acc = await Users.validateUsername(value);
 
-        const duplicate_username = await Users.validateUsername(username);
+        const message = "This username is already taken";
 
-        if (duplicate_username !== undefined) {
-            return "This username is already taken";
+        if (!user_id && found_acc) return message;
+
+        if (found_acc && found_acc.id !== user_id) {
+            return message;
         }
-    }
+    } else if (field === "email") {
+        const found_acc = await Users.validateEmail(value);
 
-    if (email !== undefined) {
+        const message = "This e-mail is already taken";
 
-        const duplicate_email = await Users.validateEmail(email);
+        if (!user_id && found_acc) return message;
 
-        if (duplicate_email !== undefined) {
-            return "This e-mail is already taken";
+        if (found_acc && found_acc.id !== user_id) {
+            return message;
         }
-    }
+    } else {
+        const found_acc = await Users.validatePhone(value);
 
-    if (phone !== undefined) {
-        
-        const duplicate_phone = await Users.validatePhone(phone);
+        const message = "This phone is already taken";
 
-        if (duplicate_phone !== undefined) {
-            return "This phone is already taken";
+        if (!user_id && found_acc) return message;
+
+        if (found_acc && found_acc.id !== user_id) {
+            return message;
         }
     }
 

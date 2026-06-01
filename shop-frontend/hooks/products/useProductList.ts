@@ -1,3 +1,4 @@
+import "../../components/products/ProductPage.css";
 import { useState, useEffect, useRef } from "react";
 import { getProductsWithFiltersApi } from "../../api/products/getProductsWithFiltersApi";
 import { getProductDetailsApi } from "../../api/products/getProductDetailsApi";
@@ -8,8 +9,9 @@ const ITEMS_PER_PAGE = 10;
 
 export function useProductList() {
     const [products, setProducts] = useState<Product[] | null>(null);
-    const [tableView, setTableView] = useState<boolean>(false);
+    const [view, setView] = useState<"table" | "grid">("grid");
     const [filter, setFilter] = useState<Filter>({
+        passedQuery: "",
         categoryId: undefined,
         sort: "name",
         sortType: "DESC",
@@ -20,13 +22,18 @@ export function useProductList() {
         offset: 0
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [alert, setAlert] = useState<{type: "success" | "error", message: string} | null>(null);
+    const [query, setQuery] = useState("");
     const [totalCount, setTotalCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const alertRef = useRef<number | null>(null);
+
+    const queryRef = useRef<number | null>(null);
 
     useEffect(() => {
         return () => {
@@ -36,21 +43,55 @@ export function useProductList() {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchOrders = async () => await getProductsWithFilters(filter.passedQuery, true);
+
+        if (!query || query === "0") {
+            fetchOrders();
+            return;
+        }
+
+        if (queryRef.current) clearTimeout(queryRef.current);
+
+        queryRef.current = setTimeout(async () => {
+            setAlert(null);
+            setCurrentPage(1);
+            await getProduct(+query);
+        }, 1200);
+
+    }, [query]);
+
+    useEffect(() => {
+        setQuery("");
+        const fetchData = async () => getProductsWithFilters(filter.passedQuery, false);
+        fetchData();
+    }, [filter]);
+
+    useEffect(() => {
+        setFilter(prev => {
+            return { ...prev, offset: 0};
+        });
+    }, [totalCount]);
+
     const getProductDetails = async (productId: number): Promise<ProductDetail | null>=> {
-        setLoading(true);
-        setError(null);
         try {
+            setLoading(true);
             const res = await getProductDetailsApi(productId);
 
-            if (!res) return null;
+            if (!res) {
+                showAlert("error", "Something went wrong");
+                return null;
+            }
 
             return res;
 
         } catch (err) {
             if (err instanceof Error) {
-                setError(err.message);
+                showAlert("error", err.message);
+
             } else {
-                setError("Something went wrong");
+                showAlert("error", "Something went wrong");
+
             }
 
             return null;
@@ -60,10 +101,40 @@ export function useProductList() {
         }
     };
 
-    const getProductsWithFilters = async (searchQuery: string) => {
-        setLoading(true);
-        setError(null);
+    const getProduct = async (productId: number) => {
         try {
+            setLoading(true);
+            const res = await getProductDetailsApi(productId);
+
+            if (!res) {
+                showAlert("error", "Product with this ID is not found");
+                return setProducts([]);
+            }
+
+            if (!Array.isArray(res)) return setProducts([res]);
+
+            setProducts(res);
+
+        } catch (err) {
+            if (err instanceof Error) {
+                showAlert("error", err.message);
+
+            } else {
+                showAlert("error", "Something went wrong");
+
+            }
+
+            return null;
+
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getProductsWithFilters = async (searchQuery: string, searching: boolean | undefined) => {
+        try {
+            setLoading(true);
+
             const res = await getProductsWithFiltersApi(
                 searchQuery,
                 filter.categoryId,
@@ -73,10 +144,10 @@ export function useProductList() {
                 filter.priceMax,
                 filter.isFeatured,
                 filter.limit,
-                filter.offset
+                searching ? 0 : filter.offset
             );
 
-            if (!res) return;
+            if (!res) return showAlert("error", "Something went wrong");
 
             setProducts(res);
 
@@ -84,9 +155,11 @@ export function useProductList() {
 
         } catch (err) {
             if (err instanceof Error) {
-                setError(err.message);
+                showAlert("error", err.message);
+
             } else {
-                setError("Something went wrong");
+                showAlert("error", "Something went wrong");
+
             }
             
         } finally {
@@ -140,28 +213,56 @@ export function useProductList() {
         setFilter(prev => ({ ...prev, isFeatured: e.target.value || "" }));
     };
 
-    const onViewChange = (view: string) => {
-        if (view === "table") {
-            setTableView(true);
-        } else {
-            setTableView(false);
-        }
+    const onViewChange = (view: "table" | "grid") => {
+        setView(view);
     };
+
+    const onQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newQuery = e.target.value;
+
+        if (Number.isNaN(+newQuery)) return showAlert("error", "Input should be a positive number");
+
+        setQuery(newQuery);
+    };
+
+    const showAlert = (type: "success" | "error", message: string) => {
+        setAlert({type: type, message: message});
+
+        if (alertRef.current) {
+            clearTimeout(alertRef.current);
+        }
+
+        alertRef.current = setTimeout(() => {
+            removeAlert();
+        }, 5000);
+    };
+
+    const removeAlert = () => setAlert(null);
 
     const onPageChange = (page: number) => {
         setCurrentPage(page);
         setFilter(prev => ({...prev, offset: (page - 1) * ITEMS_PER_PAGE}))
     };
 
+    const onPassedQueryChange = (query: string | null) => {
+        setFilter(prev => {
+            return { ...prev, passedQuery: query ? query : ""};
+        });
+    };
+
     return {
         products,
-        tableView,
+        view,
         loading,
-        error,
+        alert,
+        query,
         filter,
         totalPages,
         currentPage,
         totalCount,
+        onQueryChange,
+        showAlert,
+        removeAlert,
         getProductDetails,
         getProductsWithFilters,
         onFilterPriceChange,
@@ -170,6 +271,7 @@ export function useProductList() {
         onSortTypeChange,
         onIsFeaturedChange,
         onViewChange,
+        onPassedQueryChange,
         onPageChange
     };
 }

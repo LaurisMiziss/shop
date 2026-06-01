@@ -1,3 +1,4 @@
+import "./RegisterForm.css";
 import { EUROPEAN_COUNTRIES } from "../../data/countries";
 import type { FieldErrors } from "../../types/fieldErrors";
 
@@ -60,25 +61,29 @@ export default function RegisterForm({
     onSubmit,
     onNavigateToLogin
 }: RegisterFormProps) {
+
   return (
     <div className="auth-container fade-in">
         <h2>Create Account</h2>
 
-        <div className="form-group">
-            <label htmlFor="fullname">Full name</label>
-            <input
-                id="fullname"
-                type="text"
-                value={fullname}
-                placeholder="Enter your full name..."
-                autoComplete="fullname"
-                maxLength={100}
-                onChange={onFullnameChange}
-            />
-            <p>Full name will be visible only to you and our organization</p>
-        </div>
-
+        
         <form className="auth-form" onSubmit={onSubmit}>
+
+            <div className="form-group">
+                <label htmlFor="fullname">Full name</label>
+                <input
+                    id="fullname"
+                    type="text"
+                    value={fullname}
+                    placeholder="Enter your full name..."
+                    autoComplete="name"
+                    maxLength={100}
+                    disabled={loading}
+                    onChange={onFullnameChange}
+                />
+                <p>Full name will be visible only to you and our organization</p>
+            </div>
+
             <div className="form-group">
                 <label htmlFor="username">Username</label>
                 <input
@@ -90,6 +95,7 @@ export default function RegisterForm({
                     required
                     minLength={6}
                     maxLength={50}
+                    disabled={loading}
                     onChange={onUsernameChange}
                 />
                 <p>Username will be visible to all website visitors</p>
@@ -108,6 +114,7 @@ export default function RegisterForm({
                     autoComplete="email"
                     required
                     maxLength={255}
+                    disabled={loading}
                     onChange={onEmailChange}
                 />
                 {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
@@ -121,10 +128,10 @@ export default function RegisterForm({
                         type={showPassword ? "text" : "password"}
                         value={password}
                         placeholder="Create a password..."
-                        autoComplete="new-password"
                         required
                         minLength={8}
                         maxLength={255}
+                        disabled={loading}
                         onChange={onPasswordChange}
                     />
 
@@ -146,8 +153,9 @@ export default function RegisterForm({
                     type="text"
                     value={addressLine1}
                     placeholder="Enter your first address line..."
-                    autoComplete="addressLine1"
+                    autoComplete="address-line-1"
                     maxLength={255}
+                    disabled={loading}
                     onChange={onAddressLine1Change}
                 />
             </div>
@@ -159,8 +167,9 @@ export default function RegisterForm({
                     type="text"
                     value={addressLine2}
                     placeholder="Enter your second address line..."
-                    autoComplete="addressLine2"
+                    autoComplete="address-line-2"
                     maxLength={255}
+                    disabled={loading}
                     onChange={onAddressLine2Change}
                 />
             </div>
@@ -174,6 +183,7 @@ export default function RegisterForm({
                     placeholder="Enter city name.."
                     autoComplete="city"
                     maxLength={100}
+                    disabled={loading}
                     onChange={onCityChange}
                 />
             </div>
@@ -185,15 +195,16 @@ export default function RegisterForm({
                     type="text"
                     value={postalCode}
                     placeholder="Enter postal code.."
-                    autoComplete="postalCode"
+                    autoComplete="postal-code"
                     maxLength={20}
+                    disabled={loading}
                     onChange={onPostalCodeChange}
                 />
             </div>
 
             <div className="form-group">
                 <label htmlFor="country">Country</label>
-                <select id="country" autoComplete="country" name="country" onChange={onCountryChange}>
+                <select id="country" autoComplete="country" name="country" onChange={onCountryChange} disabled={loading}>
                     <option key="initial-value" value="initial-value">
                         Select country
                     </option>
@@ -215,6 +226,7 @@ export default function RegisterForm({
                         value={phone}
                         placeholder="20 000 000"
                         maxLength={20}
+                        disabled={loading}
                         onChange={onPhoneChange}
                     />
                 </div>
@@ -231,7 +243,7 @@ export default function RegisterForm({
 
         <p className="auth-switch">
             Already have an account?
-            <span onClick={onNavigateToLogin}>Log in here</span>
+            <span onClick={onNavigateToLogin}> Log in here</span>
         </p>
     </div>
   );

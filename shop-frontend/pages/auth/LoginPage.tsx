@@ -36,23 +36,27 @@ export default function LoginPage() {
     }
   };
 
-  const onNavigateToHome = () => navigate("/home");
+  const onNavigateToHome = () => navigate("/shop-products");
 
   const onNavigateToRegister = () => navigate("/register");
 
   return (
-    <LoginForm
-      email={email}
-      password={password}
-      showPassword={showPassword}
-      loading={loading}
-      error={error}
-      onEmailChange={(e) => setEmail(e.target.value)}
-      onPasswordChange={(e) => setPassword(e.target.value)}
-      onTogglePassword={togglePassword}
-      onSubmit={handleSubmit}
-      onNavigateToHome={onNavigateToHome}
-      onNavigateToRegister={onNavigateToRegister}
-    />
+    <div>
+
+      <LoginForm
+        email={email}
+        password={password}
+        showPassword={showPassword}
+        loading={loading}
+        error={error}
+        onEmailChange={(e) => setEmail(e.target.value)}
+        onPasswordChange={(e) => setPassword(e.target.value)}
+        onTogglePassword={togglePassword}
+        onSubmit={handleSubmit}
+        onNavigateToHome={onNavigateToHome}
+        onNavigateToRegister={onNavigateToRegister}
+      />
+      
+    </div>
   );
 }

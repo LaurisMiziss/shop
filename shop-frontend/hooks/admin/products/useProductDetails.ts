@@ -150,6 +150,8 @@ export function useProductDetails() {
 
             const res = await updateProductApi(product);
 
+            console.log(res)
+
             if (!res) return showAlert("error", "Something went wrong");
 
             showAlert("success", "Product was successfully updated");
@@ -411,13 +413,7 @@ export function useProductDetails() {
 
     const onDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newDescription = e.target.value;
-
-        if (newDescription.length > 1000) {
-            setFieldErrors(prev => ({ ...prev, description: "Description maximum length is 1000 symbols" }));
-        } else {
-            setFieldErrors(prev => ({ ...prev, description: "" }));
-        }
-
+        
         setProduct(prev => {
             if (prev === null) return null;
             return {

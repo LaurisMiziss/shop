@@ -58,11 +58,13 @@ export function OrderCreationForm({
 
   if (!user) {
     return (
-        <p>
-            You're not logged in
-            <br />
-            <a onClick={onNavigateToLogin}>Click me to navigate to the login page</a>
-        </p>
+        <div className="centred-content">
+            <p>
+                You're not logged in
+                <br />
+                <a onClick={onNavigateToLogin}>Click me to navigate to the login page</a>
+            </p>
+        </div>
     );
   }
 
@@ -160,7 +162,7 @@ export function OrderCreationForm({
             <input
             type="tel"
             value={shippingPhone}
-            placeholder="+371 20000000"
+            placeholder="20000000"
             onChange={onShippingPhoneChange}
             />
             {phoneError && (

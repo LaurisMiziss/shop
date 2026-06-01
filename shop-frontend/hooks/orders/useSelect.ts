@@ -22,9 +22,12 @@ export function useSelect() {
 
     const loadOrderCart = (orderCart: Cart[]) => setSelectedItems(orderCart);
 
+    const refreshSelectedItems = () => setSelectedItems(null);
+
     return {
         selectedItems,
         selectItem,
-        loadOrderCart
+        loadOrderCart,
+        refreshSelectedItems
     };
 }

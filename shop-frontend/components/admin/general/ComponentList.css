@@ -1,0 +1,93 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.table th {
+  text-align: left;
+  padding: 12px;
+  background-color: #f9fafb;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Cells */
+.table-cell {
+  padding: 12px;
+  font-size: 14px;
+  color: #4b5563;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* Row interaction */
+.table-row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #f3f4f6;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Single card */
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Content inside card */
+.card-row {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.card-row strong {
+  color: #111827;
+}
+
+.centred-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.head-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  gap: 30px;
+  padding: 15px 0px 15px 0px;
+}

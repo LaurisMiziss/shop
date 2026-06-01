@@ -8,40 +8,26 @@ import { Navbar } from "../../components/general/Navbar";
 export default function OrderFinish() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { getProductsWithFilters, getProductDetails } = useProductList();
-    const { searchQuery, saveQuery, clearSearch } = useSearch();
     const orderId = location.state?.orderId as number | null;
+    const { getProductDetails } = useProductList();
+    const { searchQuery, clearSearch } = useSearch();
 
     const handleSearchClick = async () => {
-        saveQuery();
-        await getProductsWithFilters(searchQuery);
-        onNavigateToShop();
+        navigate("/shop-products", { state: { query: searchQuery }});
         clearSearch();
     };
 
     const handleProductClick = async (productId: number) => {
         const product = await getProductDetails(productId);
         onNavigateToProductDetails(product);
-        clearSearch()
+        clearSearch();
     };
 
-    const onNavigateToHome = () => navigate("/home");
-    const onNavigateToShop = () => navigate("/shop-products");
-    const onNavigateToCart = () => navigate("/cart-items");
-    const onNavigateToOrders = () => navigate("/orders");
-    const onNavigateToProfile = () => navigate("/profile");
-    const onNavigateToSettings = () => navigate("/settings");
     const onNavigateToProductDetails = (product: ProductDetail | null) => navigate("/shop-products-details", {state: { product: product }});
 
     return (
-        <div>
+        <div className="order-page-layout">
             <Navbar
-                onNavigateToHome={onNavigateToHome}
-                onNavigateToShop={onNavigateToShop}
-                onNavigateToCart={onNavigateToCart}
-                onNavigateToOrders={onNavigateToOrders}
-                onNavigateToProfile={onNavigateToProfile}
-                onNavigateToSettings={onNavigateToSettings}
                 onSearchClick={handleSearchClick}
                 onProductClick={handleProductClick}
             />
@@ -67,14 +53,14 @@ export default function OrderFinish() {
 
                         <button
                             className="order-success-button"
-                            onClick={onNavigateToHome}
+                            onClick={() => navigate("/home")}
                         >
                             Back to Home
                         </button>
 
                         <button
                             className="visit-orders-button"
-                            onClick={onNavigateToOrders}
+                            onClick={() => navigate("/orders")}
                         >
                             Check your orders
                         </button>

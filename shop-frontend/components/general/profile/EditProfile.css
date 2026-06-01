@@ -1,0 +1,118 @@
+.profile-form-container {
+  max-width: 520px;
+  margin: 20px auto;
+  padding: 22px;
+
+  background-color: #ffffff;
+  border-radius: 14px;
+
+  border: 1px solid #f0f1f3;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.profile-form-heading {
+  display: flex;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+  border-bottom: 1px solid lightgrey;
+}
+
+.profile-form-heading button {
+  padding: 6px 12px;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  background: #1f2937;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.profile-form-heading button:hover {
+    background: #314259
+}
+
+
+/* container (similar to auth-form) */
+.form-section-profile {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-section-profile:last-child {
+  border-bottom: none;
+}
+
+/* group styling (match .form-group) */
+.form-group-profile {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+/* labels */
+.form-group-profile label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+/* inputs (match register inputs) */
+.form-group-profile input,
+.form-group-profile select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+/* focus effect */
+.form-group-profile input:focus,
+.form-group-profile select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* disabled fields */
+.form-group-profile input:disabled,
+.form-group-profile select:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+/* section spacing */
+.form-section-profile:not(:last-child) {
+  margin-bottom: 6px;
+}
+
+/* button group (align nicely) */
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* error alignment (reuse your existing class) */
+.field-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+/* responsive */
+@media (max-width: 480px) {
+  .form-section-profile {
+    max-width: 100%;
+    padding: 16px;
+  }
+}

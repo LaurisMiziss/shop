@@ -5,6 +5,8 @@
 
 .orders-title {
     margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid lightgray;
 }
 
 /* LIST */
@@ -121,17 +123,39 @@ textarea {
 }
 
 /* DELETE */
-.delete-button {
+.delete-order-button {
     background: #dc3545;
     color: white;
     border: none;
     padding: 6px 10px;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;
+    border: 1px solid #dc3545;
+    transition: all 0.2s ease;
+    width: 6%;
+    height: 2.5rem;
 }
 
-.delete-button:hover {
+.delete-order-button:hover {
     background: #b52a37;
+}
+
+.edit-btn {
+    background: #2563eb;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    border: 1px solid #2563eb;
+    transition: all 0.2s ease;
+    width: 6%;
+    height: 2.5rem;
+}
+
+.edit-btn:hover {
+    background: #2359cd;
 }
 
 /* ALERT */

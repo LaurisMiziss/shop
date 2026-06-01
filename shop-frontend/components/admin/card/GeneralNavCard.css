@@ -1,0 +1,16 @@
+.inline-container {
+    display: flex;
+    align-items: center;
+}
+
+.icon-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+}

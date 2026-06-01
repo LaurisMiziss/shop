@@ -80,32 +80,19 @@ export function useOrderCreation() {
         }
     };
 
-    const onShippingNameChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {      
-        if (typeof(e) === "string") {
-            setShippingName(e);
-        } else {
-            const name = e.target.value.trim();
-            setShippingName(name);
-        }
+    const onShippingNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {      
+        const fullName = e.target.value;
+
+        setShippingName(fullName);
     };
 
-    const onShippingPhoneChange = (e: React.ChangeEvent<HTMLInputElement>  | string) => {
-        if (typeof(e) === "string") {
-            setShippingPhone(e);
-        } else {
-            const phone = e.target.value.trim();
-            setShippingPhone(phone);
-        }
+    const onShippingPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const phone = e.target.value.trim();
+        setShippingPhone(phone);
     };
 
-    const onShippingAddressLineChange = (addressNum: number, e: React.ChangeEvent<HTMLInputElement> | string) => {
-        let address;
-
-        if (typeof(e) === "string") {
-            address = e;
-        } else {
-            address = e.target.value.trim();
-        }
+    const onShippingAddressLineChange = (addressNum: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const address = e.target.value;
         
         if (addressNum === 1)  {
             setShippingAddressLine1(address);
@@ -114,37 +101,21 @@ export function useOrderCreation() {
         }
     };
 
-    const onShippingCityChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
-        if (typeof(e) === "string") {
-            setShippingCity(e);
-        } else {
-            const city = e.target.value;
-            setShippingCity(city);
-        }
+    const onShippingCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const city = e.target.value;
+        setShippingCity(city);
     };
 
-    const onShippingPostalCodeChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
-        if (typeof(e) === "string") {
-            setShippingPostalCode(e);
-        } else {
-            const postalCode = e.target.value.trim();
-            setShippingPostalCode(postalCode);
-        }
+    const onShippingPostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const postalCode = e.target.value.trim();
+        setShippingPostalCode(postalCode);
     };
 
-    const onShippingCountryChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
-        let country;
+    const onShippingCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const optionCountry = e.target.value.trim();
+        setShippingCountry(optionCountry);
 
-        if (typeof(e) === "string") {
-            setShippingCountry(e);
-
-            country = EUROPEAN_COUNTRIES.find(country => country.code === e);
-        } else {
-            const optionCountry = e.target.value.trim();
-            setShippingCountry(optionCountry);
-
-            country = EUROPEAN_COUNTRIES.find(country => country.code === optionCountry);
-        }
+        const country = EUROPEAN_COUNTRIES.find(country => country.code === optionCountry);
 
         country ? setPhonePrefix(country.prefix) : setPhonePrefix("");
     };

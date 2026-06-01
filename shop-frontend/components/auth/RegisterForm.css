@@ -1,0 +1,95 @@
+/* make register form wider */
+.auth-form {
+  max-width: 500px;
+}
+
+/* helper text under inputs */
+.form-group p {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* field-specific errors */
+.field-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+/* select styling (matches inputs) */
+.form-group select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  margin-bottom: 4px;
+
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.form-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-group:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+/* phone input layout */
+.phone-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.phone-prefix {
+  padding: 10px;
+  background-color: #f9fafb;
+  font-size: 14px;
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
+}
+
+.phone-wrapper input {
+  border: none;
+  outline: none;
+  padding: 10px;
+  flex: 1;
+  font-size: 14px;
+}
+
+/* focus effect for whole phone input */
+.phone-wrapper:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* spacing tweak for long form */
+.auth-form {
+  gap: 14px;
+}
+
+/* button spacing */
+.auth-button {
+  margin-top: 10px;
+}
+
+.form-group p {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .auth-form {
+    max-width: 100%;
+    padding: 16px;
+  }
+}

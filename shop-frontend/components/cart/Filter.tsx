@@ -1,11 +1,14 @@
 import "./Filter.css";
 import type { Filter } from "../../types/filter";
 import type { Category } from "../../types/category";
+import { ViewButtonGroup } from "../general/viewButtonGroup/ViewButtonGroup";
 
 interface FilterProps {
     name: string;
     categories: Category[] | null;
     filter: Filter;
+    view: "grid" | "table";
+    onViewChange: (view: "grid" | "table") => void;
     onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFilterPriceChange: (scale: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -18,6 +21,8 @@ export function Filter({
     name,
     categories,
     filter,
+    view,
+    onViewChange,
     onNameChange,
     onFilterPriceChange,
     onCategoryChange,
@@ -27,6 +32,11 @@ export function Filter({
 }: FilterProps) {
     return (
         <div className="filters">
+
+            <div className="view-buttons">
+                <ViewButtonGroup view={view} onViewChange={onViewChange} />
+            </div>
+
             <div className="filter-group">
                 <label>Name</label>
                 <input type="text" value={name} placeholder="Search products in a cart..." onChange={(e) => onNameChange(e)} />   

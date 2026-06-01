@@ -54,7 +54,7 @@ export function useRegisterForm() {
         if (username.length > 5) {
             const timeout = setTimeout(async () => {
                 try {
-                    const res = await validateRegisterFields(username, undefined, undefined)
+                    const res = await validateRegisterFields(username, "username")
                     console.log(res)
                     if (res?.success === false) {
                         setFieldErrors(prev => ({...prev, username: res.info ?? res.info}));
@@ -86,7 +86,7 @@ export function useRegisterForm() {
                     setFieldErrors(prev => ({...prev, email: ""}));
 
                     try {
-                        const res = await validateRegisterFields(undefined, email, undefined)
+                        const res = await validateRegisterFields(email, "email")
 
                         if (res?.success === false) {
                             setFieldErrors(prev => ({...prev, email: res.info ?? res.info}));
@@ -116,7 +116,7 @@ export function useRegisterForm() {
 
         const timeout = setTimeout(async () => {
             try {
-                const res = await validateRegisterFields(undefined, undefined, fullNumber);
+                const res = await validateRegisterFields(fullNumber, "phone");
 
                 if (res?.success === false) {
                     setFieldErrors(prev => ({...prev, phone: res.info ?? res.info}));

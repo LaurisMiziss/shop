@@ -1,0 +1,50 @@
+.view-toggle {
+  display: inline-flex;
+  background: #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+}
+
+/* Base button */
+.view-toggle button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0px;
+  padding: 0px;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #4b5563;
+}
+
+/* Icon sizing */
+.view-toggle .icon {
+  width: 220px;
+  height: 20px;
+}
+
+/* Hover */
+.view-toggle button:hover {
+  background: #d1d5db;
+}
+
+/* Active state */
+.view-toggle button.active {
+  background: white;
+  color: #111827;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Optional: subtle press effect */
+.view-toggle button:active {
+  transform: scale(0.95);
+}

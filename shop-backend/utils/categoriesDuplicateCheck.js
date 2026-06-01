@@ -1,22 +1,22 @@
 const Categories = require('../models/Categories');
 
-const categoryDuplicateCheck = async (name = undefined, display_order = undefined) => {
+const categoryDuplicateCheck = async (name = undefined, display_order = undefined, category_id = undefined) => {
 
-    if (name !== undefined) {
+    if (name) {
 
-        const duplicate_name = await Categories.checkCategoryExists(name);
+        const category = await Categories.checkCategoryExists(name);
 
-        if (duplicate_name.length > 0) {
-            return "This category name already exists";
+        if (category) {
+            if (category.id !== category_id) return "This category name already exists";
         }
     }
 
-    if (display_order !== undefined) {
+    if (display_order) {
 
-        const duplicate_display_order = await Categories.checkDisplayOrderExists(display_order);
-        
-        if (duplicate_display_order !== undefined) {
-            return "This display order is already taken";
+        const category = await Categories.checkDisplayOrderExists(display_order);
+
+        if (category) {
+            if (category.id !== category_id) return "This display order is already taken";
         }
     }
 

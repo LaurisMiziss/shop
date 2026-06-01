@@ -1,0 +1,90 @@
+.settings-page-layout {
+    background: var(--bg);
+    min-height: 1000px;
+}
+
+.settings-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 24px;
+
+    background: var(--card);
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.settings-title {
+    color: var(--text);
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.settings-under-title {
+    color: var(--text);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* ITEM ROW */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.settings-value {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--text);
+}
+
+/* SWITCH */
+.switch {
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+
+    background: #ddd;
+    transition: background 0.2s;
+}
+
+.switch-thumb {
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+
+    position: absolute;
+    top: 3px;
+    left: 3px;
+
+    transition: transform 0.2s;
+}
+
+/* ACTIVE STATE */
+.switch.active {
+    background: #4f46e5; /* subtle modern blue */
+}
+
+.switch.active .switch-thumb {
+    transform: translateX(20px);
+}

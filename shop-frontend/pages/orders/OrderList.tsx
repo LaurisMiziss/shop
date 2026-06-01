@@ -1,5 +1,7 @@
+import "./OrderList.css";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import type { ProductDetail } from "../../types/products";
 import { useSearch } from "../../context/SearchContext";
 import { useOrderList } from "../../hooks/orders/useOrderList";
 import { useProductList } from "../../hooks/products/useProductList";
@@ -9,12 +11,12 @@ import { Navbar } from "../../components/general/Navbar";
 
 export default function OrderList() {
     const navigate = useNavigate();
-    const { searchQuery, saveQuery, clearSearch } = useSearch();
+    const { searchQuery, clearSearch } = useSearch();
     const { 
-        orders, selected, alert, currentPage, totalPages, 
+        orders, selected, alert, loading, currentPage, totalPages, 
         getOrders, handleEditChange, onNoteChange, onSaveOrUndo, onDeleteOrder, removeAlert, onPageChange 
     } = useOrderList();
-    const { getProductDetails, getProductsWithFilters } = useProductList();
+    const { getProductDetails } = useProductList();
 
     useEffect(() => {
         const loadData = async () => {
@@ -24,61 +26,58 @@ export default function OrderList() {
         loadData();
     }, []);
 
-    const onNavigateToHome = () => navigate("/home");
-    const onNavigateToShop = () => navigate("/shop-products");
-    const onNavigateToCart = () => navigate("/cart-items");
-    const onNavigateToOrders = () => navigate("/orders");
-    const onNavigateToProfile = () => navigate("/profile");
-    const onNavigateToSettings = () => navigate("/settings");
-    const onNavigateToProductDetails = async (productId: number) => {
-        const product = await getProductDetails(productId);
-        navigate("/shop-products-details", {state: { product: product }});
-    }
-    const onNavigateToAdminPanel = () => navigate("/admin-panel");
+    const onNavigateToProductDetails = (product: ProductDetail | null) => navigate("/shop-products-details", {state: { product: product }});
 
     const handleSearchClick = async () => {
-        saveQuery();
-        await getProductsWithFilters(searchQuery);
-        onNavigateToShop();
+        navigate("/shop-products", { state: { query: searchQuery }});
         clearSearch();
     };
 
     const handleProductClick = async (productId: number) => {
-        onNavigateToProductDetails(productId);
+        const product = await getProductDetails(productId);
+        onNavigateToProductDetails(product);
         clearSearch();
     };
 
     return (
-        <div>
+        <div className="orders-page">
+
             <Navbar
-                onNavigateToHome={onNavigateToHome}
-                onNavigateToShop={onNavigateToShop}
-                onNavigateToCart={onNavigateToCart}
-                onNavigateToOrders={onNavigateToOrders}
-                onNavigateToProfile={onNavigateToProfile}
-                onNavigateToSettings={onNavigateToSettings}
                 onSearchClick={handleSearchClick}
                 onProductClick={handleProductClick}
-                onNavigateToAdminPanel={onNavigateToAdminPanel}
             />
 
-            <OrderListTable 
-                orders={orders} 
-                selected={selected}
-                alert={alert}
-                handleEditChange={handleEditChange}
-                onNoteChange={onNoteChange}
-                onSaveOrUndo={onSaveOrUndo}
-                onNavigateToProductDetails={onNavigateToProductDetails}
-                onDeleteOrder={onDeleteOrder}
-                removeAlert={removeAlert}
-                />
+            <div className="orders-content">
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
+                <div className="orders-table-wrapper">
+
+                    <OrderListTable 
+                        orders={orders} 
+                        selected={selected}
+                        alert={alert}
+                        loading={loading}
+                        handleEditChange={handleEditChange}
+                        onNoteChange={onNoteChange}
+                        onSaveOrUndo={onSaveOrUndo}
+                        onNavigateToProductDetails={handleProductClick}
+                        onDeleteOrder={onDeleteOrder}
+                        removeAlert={removeAlert}
+                    />
+
+                </div>
+
+                <div className="orders-pagination">
+
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={onPageChange}
+                    />
+
+                </div>
+
+            </div>
+
         </div>
     );
 }

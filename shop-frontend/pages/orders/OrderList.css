@@ -1,0 +1,69 @@
+.orders-page {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* main spacing */
+.orders-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* table container (card style) */
+.orders-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  overflow-x: auto; /* important for mobile */
+}
+
+/* table styling */
+.orders-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px; /* prevents ugly squishing */
+}
+
+.orders-table-wrapper th {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  padding: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.orders-table-wrapper td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* row hover (nice UX touch) */
+.orders-table-wrapper tr:hover {
+  background-color: #f9fafb;
+}
+
+/* pagination centered */
+.orders-pagination {
+  display: flex;
+  justify-content: center;
+}
+
+/* mobile tweaks */
+@media (max-width: 768px) {
+  .orders-content {
+    padding: 12px;
+  }
+
+  .orders-table-wrapper {
+    padding: 12px;
+  }
+}

@@ -1,56 +1,51 @@
+import "../../components/products/ProductPage.css";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import type { ProductDetail } from "../../types/products";
 import { useSearch } from "../../context/SearchContext";
 import { useProductList } from "../../hooks/products/useProductList";
 import { useCategoryList } from "../../hooks/category/useCategoryList";
 import { Navbar } from "../../components/general/Navbar";
-import { SearchQuery } from "../../components/general/SearchQuery";
 import { ProductList } from "../../components/products/ProductList";
 import { Filters } from "../../components/general/Filters";
 import { Pagination } from "../../components/general/Pagination";
 
 export default function ShopPage() {
+    const location = useLocation();
+    const passedQuery = location.state?.query as string | null;
     const {
         products,
-        tableView,
+        view,
         loading,
-        error,
+        alert,
         filter,
         totalPages,
         currentPage,
         totalCount,
         getProductDetails,
-        getProductsWithFilters,
         onFilterPriceChange,
         onCategoryChange,
         onSortChange,
         onSortTypeChange,
         onIsFeaturedChange,
         onViewChange,
+        removeAlert,
+        onPassedQueryChange,
         onPageChange
     } = useProductList();   
     const { categories } = useCategoryList();
-    const { searchQuery, savedQuery, saveQuery, clearSearch } = useSearch();
+    const { searchQuery, clearSearch } = useSearch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const getProducts = async () => await getProductsWithFilters(savedQuery);
-        getProducts();
-    }, [currentPage, totalPages, filter]);
-    
-    const onNavigateToHome = () => navigate("/home");
-    const onNavigateToShop = () => navigate("/shop-products");
-    const onNavigateToCart = () => navigate("/cart-items");
-    const onNavigateToOrders = () => navigate("/orders");
-    const onNavigateToProfile = () => navigate("/profile");
-    const onNavigateToSettings = () => navigate("/settings");
+        onPassedQueryChange(passedQuery);
+    }, [passedQuery]);
+
     const onNavigateToProductDetails = (product: ProductDetail | null) => navigate("/shop-products-details", {state: { product: product }});
 
     const handleSearchClick = async () => {
-        saveQuery();
-        await getProductsWithFilters(searchQuery);
-        onNavigateToShop();
+        navigate("/shop-products", { state: { query: searchQuery }});
         clearSearch();
     };
 
@@ -61,48 +56,49 @@ export default function ShopPage() {
     };
 
     return (
-        <div className="shop-page">
+        <div className="shop-page-layout">
 
             <Navbar
-                onNavigateToHome={onNavigateToHome}
-                onNavigateToShop={onNavigateToShop}
-                onNavigateToCart={onNavigateToCart}
-                onNavigateToOrders={onNavigateToOrders}
-                onNavigateToProfile={onNavigateToProfile}
-                onNavigateToSettings={onNavigateToSettings}
                 onSearchClick={handleSearchClick}
                 onProductClick={handleProductClick}
             />
 
-            <SearchQuery
-                totalCount={totalCount}
-                savedQuery={savedQuery}
-            />
+            <div className="shop-page-content">
 
-            <Filters
-                filter={filter}
-                categories={categories}
-                onFilterPriceChange={onFilterPriceChange}
-                onCategoryChange={onCategoryChange}
-                onSortChange={onSortChange}
-                onSortTypeChange={onSortTypeChange}
-                onIsFeaturedChange={onIsFeaturedChange}
-            />
+                <div className="shop-main">
 
-            <ProductList
-                products={products}
-                tableView={tableView}
-                loading={loading}
-                error={error}
-                onProductClick={handleProductClick}
-                onViewChange={onViewChange}
-            />
+                    <Filters
+                        filter={filter}
+                        view={view}
+                        categories={categories}
+                        onFilterPriceChange={onFilterPriceChange}
+                        onCategoryChange={onCategoryChange}
+                        onViewChange={onViewChange}
+                        onSortChange={onSortChange}
+                        onSortTypeChange={onSortTypeChange}
+                        onIsFeaturedChange={onIsFeaturedChange}
+                    />
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
+                    <ProductList
+                        products={products}
+                        loading={loading}
+                        passedQuery={passedQuery}
+                        totalCount={totalCount}
+                        view={view}
+                        alert={alert}
+                        onProductClick={handleProductClick}
+                        removeAlert={removeAlert}
+                    />
+
+                </div>
+
+            </div>
+            
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
 
         </div>
     );

@@ -1,4 +1,5 @@
 import "./Pagination.css";
+import { useEffect } from "react";
 
 interface PaginationProps {
     currentPage: number;
@@ -12,6 +13,13 @@ export function Pagination({
     onPageChange
 }: PaginationProps) {
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }, [currentPage]);
+
     const generatePages = () => {
         const pages = [];
 
@@ -19,7 +27,6 @@ export function Pagination({
         let start = Math.max(1, currentPage - 2);
         let end = Math.min(totalPages, start + maxVisible - 1);
 
-        // adjust if near end
         if (end - start < maxVisible - 1) {
             start = Math.max(1, end - maxVisible + 1);
         }
@@ -28,9 +35,9 @@ export function Pagination({
             pages.push(
                 <li
                     key={i}
-                    className={`page-item ${i === currentPage ? "active" : ""}`}
+                    className={`page-btn ${i === currentPage ? "active" : ""}`}
                 >
-                    <button onClick={() => onPageChange(i)}>
+                    <button onClick={() => onPageChange(i)} disabled={i === currentPage && currentPage === totalPages}>
                         {i}
                     </button>
                 </li>
@@ -40,27 +47,21 @@ export function Pagination({
         return pages;
     };
 
-    return (
-        <div className="pagination">
-            <button
-                className="nav-btn"
-                disabled={currentPage === 1}
-                onClick={() => onPageChange(currentPage - 1)}
-            >
-                ←
-            </button>
+return (
+        <div className="pagination"> 
 
+            <button className="nav-btn" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)} >
+                ←
+            </button> 
+            
             <ul className="page-list">
                 {generatePages()}
             </ul>
-
-            <button
-                className="nav-btn"
-                disabled={currentPage === totalPages}
-                onClick={() => onPageChange(currentPage + 1)}
-            >
+            
+            <button className="nav-btn" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)} >
                 →
-            </button>
+            </button> 
+            
         </div>
     );
 }

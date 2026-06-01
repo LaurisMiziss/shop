@@ -15,7 +15,9 @@ interface CartContextType {
   alert: {type: "success" | "error", message: string} | null;
   totalCount: number;
   currentPage: number;
+  view: "table" | "grid";
   totalPages: number;
+  onViewChange: (view: "table" | "grid") => void;
   getCartItems: () => void;
   updateItem: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   deleteItem: (productId: number) => void;
@@ -28,9 +30,8 @@ interface CartContextType {
   onIsFeaturedChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   removeAlert: () => void;
   onPageChange: (page: number) => void;
+  resetFilter: () => void;
 }
-
-const ITEMS_PER_PAGE = 10;
 
 const CartContext = createContext<CartContextType | null>(null);
 
@@ -39,6 +40,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [name, setName] = useState<string>("");
   const [selected, setSelected] = useState<{product: Cart, quantity: number} | null>(null);
   const [filter, setFilter] = useState<Filter>({
+      passedQuery: "",
       categoryId: undefined,
       sort: "name",
       sortType: "DESC",
@@ -48,6 +50,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       limit: 10,
       offset: 0
   });
+  const [view, setView] = useState<"table" | "grid">("grid");
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{
     type: "success" | "error";
@@ -56,7 +59,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(totalCount / 10);
 
   const timeoutRef = useRef<number | null>(null);
   const quantityRef = useRef<number | null>(null);
@@ -70,6 +73,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const loadData = async () => await getCartItems();
     loadData();
   }, []);
+
+  const resetFilter = () => {
+    setFilter({
+        passedQuery: "",
+        categoryId: undefined,
+        sort: "name",
+        sortType: "DESC",
+        priceMin: 0,
+        priceMax: 10000,
+        isFeatured: "",
+        limit: 10,
+        offset: 0
+      });
+  };
 
   useEffect(() => {
     const timeout = setTimeout(async () => await getCartItems(), name.length > 0 ? 500 : 0);
@@ -263,8 +280,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
-    setFilter(prev => ({...prev, offset: (page - 1) * ITEMS_PER_PAGE}))
+    setFilter(prev => ({...prev, offset: (page - 1) * 10}))
   };
+
+  const onViewChange = (view: "grid" | "table") => setView(view);
 
   return (
     <CartContext.Provider value={{
@@ -274,6 +293,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       filter,
       loading,
       alert,
+      view,
+      onViewChange,
       totalCount,
       currentPage,
       totalPages,
@@ -288,7 +309,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       onSortTypeChange,
       onIsFeaturedChange,
       removeAlert,
-      onPageChange
+      onPageChange,
+      resetFilter
     }}>
       {children}
     </CartContext.Provider>

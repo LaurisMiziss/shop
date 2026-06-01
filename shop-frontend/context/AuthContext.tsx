@@ -1,11 +1,13 @@
 import { createContext, useContext, useState } from "react";
 import type { User } from "../types/user";
+import { onLoginByTokenApi } from "../api/auth/onLoginByTokenApi";
 
 interface AuthContextType {
   user: User | null;
+  isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
-  isAuthenticated: boolean;
+  onLoginByToken: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,11 +24,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("token");
   };
 
+  const onLoginByToken = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      const res = await onLoginByTokenApi(token);
+
+      if (!res) return;
+
+      login(res);
+
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
       login,
       logout,
+      onLoginByToken,
       isAuthenticated: user !== null,
     }}>
       {children}

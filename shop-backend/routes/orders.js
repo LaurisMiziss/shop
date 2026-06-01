@@ -7,6 +7,16 @@ const validateQuery = require('../middleware/validateQuery');
 const ordersController = require('../controllers/ordersController');
 
 // Admin routes
+router.get('/admin', 
+    requireAuth,
+    requireAuth,
+    ordersController.getAllOrders
+);
+router.get('/admin/:order_id', 
+    requireAuth,
+    requireAuth,
+    ordersController.getOrderById
+);
 router.patch('/admin/:order_id',
     requireAuth,
     requireAdmin,

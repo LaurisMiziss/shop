@@ -1,5 +1,7 @@
-import { Category } from "../../../types/category";
-import { CategoryEditFieldErrors } from "../../../types/fieldErrors";
+import "../general/ComponentDetails.css";
+import type { Category } from "../../../types/category";
+import type { CategoryEditFieldErrors } from "../../../types/fieldErrors";
+import { Alert } from "../../general/alert/Alert";
 
 interface CategoryDetailsProps {
     action: "create" | "update" | null;
@@ -10,15 +12,15 @@ interface CategoryDetailsProps {
     fieldErrors: CategoryEditFieldErrors;
     loading: boolean;
     onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    onDescChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     onImageUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onDisplayOrderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onOrderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onIsActiveChange: () => void;
-    onUndoClick: (field: string | undefined) => void;
     removeAlert: () => void;
-    updateCategory: (e: React.FormEvent<HTMLFormElement>) => void;
     postCategory: (e: React.FormEvent<HTMLFormElement>) => void;
-    handleDeleteClick: () => void;
+    updateCategory: (e: React.FormEvent<HTMLFormElement>) => void;
+    onUndoClick: (field: "name" | "description" | "image_url" | "display_order" | "is_active" | undefined) => void;
+    onDeleteClick: () => void;
 }
 
 export function CategoryDetails({
@@ -30,23 +32,23 @@ export function CategoryDetails({
     fieldErrors,
     loading,
     onNameChange,
-    onDescriptionChange,
+    onDescChange,
     onImageUrlChange,
-    onDisplayOrderChange,
+    onOrderChange,
     onIsActiveChange,
-    onUndoClick,
     removeAlert,
-    updateCategory,
     postCategory,
-    handleDeleteClick
+    updateCategory,
+    onUndoClick,
+    onDeleteClick
 }: CategoryDetailsProps) {
 
-    if (!oldCategory || !category) {
+    if (!oldCategory || !category || !action) {
         return (
             <p>
                 404 Error
                 <br />
-                Category is not found
+                Category or action is not found
             </p>
         );
     }
@@ -65,16 +67,10 @@ export function CategoryDetails({
         return <span className="field-error">{fieldErrors[key]}</span>;
     };
 
-    const undoButton = (field: string) => {
-        if (!allowedFields.includes(field as FieldName)) {
-            return (
-                <p>Invalid field</p>
-            );
-        }
-
+    const undoButton = (field: "name" | "description" | "image_url" | "display_order" | "is_active" | undefined) => {
         return (
-            <button type="button" onClick={() => onUndoClick(field)} disabled={loading}>
-                Undo
+            <button type="button" onClick={() => onUndoClick(field)} disabled={loading} className="action-btn">
+                Undo Changes
             </button>
         );
     };
@@ -83,19 +79,13 @@ export function CategoryDetails({
         <div className="page">
 
             {/* ALERT */}
-            <div className="alert-container" onMouseEnter={removeAlert}>
-                {alert && (
-                    <div className={`alert ${alert.type}`}>
-                        {alert.message}
-                    </div>
-                )}
-            </div>
+            <Alert alert={alert} onRemoveAlert={removeAlert} />
 
             <h2 className="page-title">
                 {action === "update" ? `Editing ${oldCategory.name}` : `Creating a new category`}
             </h2>
 
-            <form className="form-card" onSubmit={action === "update" ? updateCategory : postCategory}>
+            <form onSubmit={action === "update" ? updateCategory : postCategory}>
 
                 {/* NAME */}
                 <section className="form-section">
@@ -123,7 +113,8 @@ export function CategoryDetails({
                             id="pr-desc"
                             placeholder="Fresh seasonal fruits"
                             value={category.description}
-                            onChange={onDescriptionChange}
+                            onChange={onDescChange}
+                            maxLength={1000}
                         />
                         {fieldErrors.description && fieldError("description")}
                         {undoButton("description")}
@@ -144,6 +135,11 @@ export function CategoryDetails({
                         {fieldErrors.image_url && fieldError("image_url")}
                         {undoButton("image_url")}
                     </div>
+                    {category.image_url && (
+                        <div className="form-group">
+                            <img src={category.image_url} alt={`Photo of ${oldCategory.name.toLocaleLowerCase()}`} width="30%" height="30%" />
+                        </div>
+                    )}
                 </section>
 
                 {/* DISPLAY ORDER */}
@@ -151,13 +147,14 @@ export function CategoryDetails({
                     <div className="form-group">
                         <label htmlFor="pr-display-order">Display order:</label>
                         <input
-                            type="text"
+                            type="number"
                             id="pr-display-order"
                             placeholder="4"
+                            required
                             value={category.display_order}
-                            onChange={onDisplayOrderChange}
+                            onChange={onOrderChange}
                         />
-                        {fieldErrors.image_url && fieldError("display_order")}
+                        {fieldErrors.display_order && fieldError("display_order")}
                         {undoButton("display_order")}
                     </div>
                 </section>
@@ -174,6 +171,21 @@ export function CategoryDetails({
                         />
                         {fieldErrors.is_active && fieldError("is_active")}
                         {undoButton("is_active")}
+                    </div>
+                </section>
+
+                {/* MAIN BUTTONS */}
+                <section className="form-section">
+                    <div className="button-group">
+                        <button type="submit" disabled={loading} className="action-btn">
+                            {action === "update" ? "Save Changes" : "Create Product"}
+                        </button>
+                        {undoButton(undefined)}
+                        {action === "update" && (
+                            <button type="button" onClick={onDeleteClick} disabled={loading} className="action-btn">
+                                Delete Category
+                            </button>
+                        )}
                     </div>
                 </section>
 

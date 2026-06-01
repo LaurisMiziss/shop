@@ -15,6 +15,8 @@ export default function LoginPage() {
     e.preventDefault();
     const res = await handleRegister();
     if (res?.success) {
+      const token = localStorage.getItem("token");
+      if (token) localStorage.removeItem("token");
       navigate("/login");
     }
   };
